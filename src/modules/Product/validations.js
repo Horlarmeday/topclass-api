@@ -4,7 +4,9 @@ import Joi from '@hapi/joi';
 export function validateProduct(product) {
   const schema = Joi.object({
     name: Joi.string().required(),
-    desc: Joi.string().required(),
+    desc: Joi.string()
+      .optional()
+      .allow(''),
     quantity: Joi.number().required(),
     cost: Joi.number().required(),
     selling_price: Joi.number().required(),
