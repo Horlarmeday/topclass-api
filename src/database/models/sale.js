@@ -1,51 +1,49 @@
 import sequelizePaginate from 'sequelize-paginate';
 
 module.exports = (sequelize, DataTypes) => {
-  const Customer = sequelize.define(
-    'Customer',
+  const Sale = sequelize.define(
+    'Sale',
     {
-      cid: {
+      slid: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      name: {
-        type: DataTypes.STRING,
+      amount_paid: {
+        type: DataTypes.DECIMAL,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      phone: {
-        type: DataTypes.STRING,
+      ivid: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      email: {
-        type: DataTypes.STRING,
+      amount_remaining: {
+        type: DataTypes.DECIMAL,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      state: {
-        type: DataTypes.STRING,
+      amount_due: {
+        type: DataTypes.DECIMAL,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      address: {
-        type: DataTypes.STRING,
+      status: {
+        type: DataTypes.ENUM('Pending', 'Partial', 'Paid'),
         allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        defaultValue: 'Pending',
       },
-      lga: {
-        type: DataTypes.STRING,
+      cid: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -58,17 +56,32 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      customer_type: DataTypes.ENUM('Individual', 'Government', 'NGO', 'Corporate'),
     },
     {}
   );
-  Customer.associate = ({ Staff }) => {
+  Sale.associate = ({ Staff, Customer, Invoice, Payment, Receipt }) => {
     // associations can be defined here
-    Customer.belongsTo(Staff, {
+    Sale.belongsTo(Staff, {
       foreignKey: 'sid',
+    });
+
+    Sale.belongsTo(Customer, {
+      foreignKey: 'cid',
+    });
+
+    Sale.belongsTo(Invoice, {
+      foreignKey: 'ivid',
+    });
+
+    Sale.hasMany(Payment, {
+      foreignKey: 'slid',
+    });
+
+    Sale.hasMany(Receipt, {
+      foreignKey: 'slid',
     });
   };
 
-  sequelizePaginate.paginate(Customer);
-  return Customer;
+  sequelizePaginate.paginate(Sale);
+  return Sale;
 };

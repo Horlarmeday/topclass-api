@@ -13,6 +13,8 @@ import productRoutes from '../modules/Product/productRoutes';
 import utilityRoutes from '../modules/Utility/utilityRoutes';
 import serviceRoutes from '../modules/Service/serviceRoutes';
 import invoiceRoutes from '../modules/Invoice/invoiceRoutes';
+import saleRoutes from '../modules/Sale/saleRoutes';
+import dashboardRoutes from '../modules/Dashboard/dashboardRoutes';
 import './logger';
 
 const server = express();
@@ -41,6 +43,8 @@ server.use('/api/products', productRoutes);
 server.use('/api/utilities', utilityRoutes);
 server.use('/api/services', serviceRoutes);
 server.use('/api/invoices', invoiceRoutes);
+server.use('/api/sales', saleRoutes);
+server.use('/api/dashboard', dashboardRoutes);
 
 server.use((req, res, next) => {
   // set the timeout for all HTTP requests

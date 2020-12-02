@@ -1,39 +1,34 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Invoices', {
-      ivid: {
+    return queryInterface.createTable('Waybills', {
+      wyid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
+      waybill_numb: {
         type: Sequelize.STRING,
+      },
+      ivid: {
+        type: Sequelize.INTEGER,
       },
       sid: {
         type: Sequelize.INTEGER,
       },
-      comment: {
+      vehicle_numb: {
         type: Sequelize.STRING,
-      },
-      invoice_numb: {
-        type: Sequelize.JSON,
-      },
-      is_approved: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      has_step_down: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
       },
       cid: {
         type: Sequelize.INTEGER,
       },
-      vat: {
-        type: Sequelize.FLOAT,
+      driver_name: {
+        type: Sequelize.STRING,
       },
-      invoice_type: {
+      name: {
+        type: Sequelize.STRING,
+      },
+      driver_phone: {
         type: Sequelize.STRING,
       },
       createdAt: {
@@ -47,6 +42,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Invoices');
+    return queryInterface.dropTable('Waybills');
   },
 };

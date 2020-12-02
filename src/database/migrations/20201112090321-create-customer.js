@@ -16,6 +16,9 @@ module.exports = {
       state: {
         type: Sequelize.STRING,
       },
+      address: {
+        type: Sequelize.STRING,
+      },
       sid: {
         type: Sequelize.INTEGER,
       },

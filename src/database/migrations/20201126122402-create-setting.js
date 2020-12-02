@@ -1,7 +1,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Invoices', {
-      ivid: {
+    return queryInterface.createTable('Settings', {
+      stid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -10,31 +10,14 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
+      value: {
+        type: Sequelize.STRING,
+      },
+      desc: {
+        type: Sequelize.STRING,
+      },
       sid: {
         type: Sequelize.INTEGER,
-      },
-      comment: {
-        type: Sequelize.STRING,
-      },
-      invoice_numb: {
-        type: Sequelize.JSON,
-      },
-      is_approved: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      has_step_down: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      cid: {
-        type: Sequelize.INTEGER,
-      },
-      vat: {
-        type: Sequelize.FLOAT,
-      },
-      invoice_type: {
-        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -47,6 +30,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Invoices');
+    return queryInterface.dropTable('Settings');
   },
 };

@@ -1,13 +1,20 @@
 import sequelizePaginate from 'sequelize-paginate';
 
 module.exports = (sequelize, DataTypes) => {
-  const Customer = sequelize.define(
-    'Customer',
+  const Waybill = sequelize.define(
+    'Waybill',
     {
-      cid: {
+      wyid: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      },
+      waybill_numb: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       name: {
         type: DataTypes.STRING,
@@ -16,36 +23,8 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      state: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      lga: {
-        type: DataTypes.STRING,
+      ivid: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -58,17 +37,52 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      customer_type: DataTypes.ENUM('Individual', 'Government', 'NGO', 'Corporate'),
+      vehicle_numb: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      cid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      driver_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      driver_phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
     },
     {}
   );
-  Customer.associate = ({ Staff }) => {
+  Waybill.associate = ({ Staff, Customer, Invoice }) => {
     // associations can be defined here
-    Customer.belongsTo(Staff, {
+    Waybill.belongsTo(Staff, {
       foreignKey: 'sid',
+    });
+
+    Waybill.belongsTo(Customer, {
+      foreignKey: 'cid',
+    });
+
+    Waybill.belongsTo(Invoice, {
+      foreignKey: 'ivid',
     });
   };
 
-  sequelizePaginate.paginate(Customer);
-  return Customer;
+  sequelizePaginate.paginate(Waybill);
+  return Waybill;
 };

@@ -1,74 +1,69 @@
 import sequelizePaginate from 'sequelize-paginate';
 
 module.exports = (sequelize, DataTypes) => {
-  const Customer = sequelize.define(
-    'Customer',
+  const Item = sequelize.define(
+    'Item',
     {
-      cid: {
+      did: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      name: {
+      item: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      state: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      lga: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
-      sid: {
+      item_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      customer_type: DataTypes.ENUM('Individual', 'Government', 'NGO', 'Corporate'),
+      price: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      item_type: DataTypes.STRING,
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      sid: DataTypes.INTEGER,
     },
     {}
   );
-  Customer.associate = ({ Staff }) => {
+  Item.associate = ({ Staff, Product, Service }) => {
     // associations can be defined here
-    Customer.belongsTo(Staff, {
+    Item.belongsTo(Staff, {
       foreignKey: 'sid',
+    });
+
+    Item.belongsTo(Product, {
+      foreignKey: 'item_id',
+    });
+
+    Item.belongsTo(Service, {
+      foreignKey: 'item_id',
     });
   };
 
-  sequelizePaginate.paginate(Customer);
-  return Customer;
+  sequelizePaginate.paginate(Item);
+  return Item;
 };
