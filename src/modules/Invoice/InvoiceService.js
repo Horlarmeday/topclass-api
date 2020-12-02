@@ -5,7 +5,17 @@ import {
   searchInvoices,
   updateInvoice,
   deleteInvoice,
+  approveInvoice,
+  declineInvoice,
+  stepDownInvoice,
+  createWaybill,
+  getWaybills,
+  searchWaybill,
+  updateWaybill,
 } from './invoiceRepository';
+import { getSettingByName } from '../Utility/utilityRepository';
+
+import SettingInterface from '../../helpers/contants';
 
 class InvoiceService {
   /**
@@ -17,6 +27,13 @@ class InvoiceService {
    * @memberOf InvoiceService
    */
   static async createInvoiceService(body) {
+    if (body.should_include_vat) {
+      const vat = await getSettingByName(SettingInterface.VAT);
+      const total = body.product.map(cost => Number(cost.price)).reduce((a, b) => a + b, 0);
+      const vatPrice = (Number(vat.value) / 100) * total;
+      return createInvoice(body, vatPrice);
+    }
+
     return createInvoice(body);
   }
 
@@ -67,6 +84,87 @@ class InvoiceService {
     }
 
     return getInvoices();
+  }
+
+  /**
+   * approve invoice
+   *
+   * @static
+   * @returns {json} json object with invoice data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async approveInvoiceService(body) {
+    return approveInvoice(body);
+  }
+
+  /**
+   * decline invoice
+   *
+   * @static
+   * @returns {json} json object with invoice data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async declineInvoiceService(body) {
+    return declineInvoice(body);
+  }
+
+  /**
+   * stepdown invoice
+   *
+   * @static
+   * @returns {json} json object with invoice data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async stepDownInvoiceService(body) {
+    return stepDownInvoice(body);
+  }
+
+  /**
+   * create waybill
+   *
+   * @static
+   * @returns {json} json object with waybill data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async createWaybillService(body) {
+    return createWaybill(body);
+  }
+
+  /**
+   * get waybills
+   *
+   * @static
+   * @returns {json} json object with waybills data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async getWaybills(body) {
+    const { currentPage, pageLimit, search } = body;
+    if (search) {
+      return searchWaybill(Number(currentPage), Number(pageLimit), search);
+    }
+
+    if (Object.values(body).length) {
+      return getWaybills(Number(currentPage), Number(pageLimit));
+    }
+
+    return getWaybills();
+  }
+
+  /**
+   * update waybill
+   *
+   * @static
+   * @returns {json} json object with waybill data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async updateWaybillService(body) {
+    return updateWaybill(body);
   }
 }
 export default InvoiceService;

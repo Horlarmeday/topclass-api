@@ -1,6 +1,7 @@
-import { validateInvoice } from './validations';
+/* eslint-disable camelcase */
+import { validateInvoice, validateWaybill } from './validations';
 import InvoiceService from './InvoiceService';
-import { getInvoiceById, getOneInvoice } from './invoiceRepository';
+import { getOneInvoice, getOneWaybill } from './invoiceRepository';
 
 /**
  *
@@ -124,6 +125,178 @@ class InvoiceController {
       return res.status(200).json({
         message: 'Data retrieved',
         data: invoices,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * approve invoice
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice data
+   */
+  static async approveInvoice(req, res, next) {
+    const { invoice_id } = req.body;
+    if (!invoice_id) return res.status(400).json('Invoice id is required');
+
+    try {
+      const invoice = await InvoiceService.approveInvoiceService(req.body);
+
+      return res.status(200).json({
+        message: 'invoice approved successfully',
+        data: invoice,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * decline invoice
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice data
+   */
+  static async declineInvoice(req, res, next) {
+    const { invoice_id, comment } = req.body;
+    if (!invoice_id && !comment) return res.status(400).json('Invoice id and comment are required');
+
+    try {
+      const invoice = await InvoiceService.declineInvoiceService(req.body);
+
+      return res.status(200).json({
+        message: 'invoice declined!',
+        data: invoice,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * decline invoice
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice data
+   */
+  static async stepDownInvoice(req, res, next) {
+    const { invoice_id } = req.body;
+    if (!invoice_id) return res.status(400).json('Invoice id required');
+
+    try {
+      const invoice = await InvoiceService.stepDownInvoiceService(req.body);
+
+      return res.status(200).json({
+        message: 'invoice stepped down!',
+        data: invoice,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * create a waybill
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with status, waybill data
+   */
+  static async createWaybill(req, res, next) {
+    const { error } = validateWaybill(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
+
+    try {
+      const waybill = await InvoiceService.createWaybillService(
+        Object.assign(req.body, { sid: req.user.sub })
+      );
+
+      return res.status(201).json({
+        message: 'Successful, waybill created!',
+        data: waybill,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get all waybills
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with waybills data
+   */
+  static async getWaybills(req, res, next) {
+    try {
+      const waybills = await InvoiceService.getWaybills(req.query);
+
+      return res.status(200).json({
+        message: 'Data retrieved',
+        data: waybills,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get one waybill
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with waybill data
+   */
+  static async getOneWaybill(req, res, next) {
+    try {
+      const waybill = await getOneWaybill(req.params.id);
+      if (!waybill) return res.status(404).json('Waybill not found');
+
+      return res.status(200).json({
+        message: 'Success',
+        data: waybill,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * update waybill data
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with waybill data
+   */
+  static async updateWaybill(req, res, next) {
+    const { wyid } = req.body;
+    if (!wyid) return res.status(400).json('Invoice id required');
+
+    try {
+      const waybill = await InvoiceService.updateWaybillService(req.body);
+
+      return res.status(200).json({
+        message: 'Data updated successfully',
+        data: waybill,
       });
     } catch (e) {
       return next(e);
