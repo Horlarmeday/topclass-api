@@ -7,6 +7,14 @@ import {
   getUnits,
   deleteLabel,
   deleteUnit,
+  createItem,
+  deleteItem,
+  getItems,
+  filterItems,
+  searchItems,
+  getItemById,
+  createSetting,
+  updateSetting, getSettings,
 } from './utilityRepository';
 
 class UtilityService {
@@ -98,6 +106,99 @@ class UtilityService {
     }
 
     return getUnits();
+  }
+
+  /**
+   * create default item
+   *
+   * @static
+   * @returns {json} json object with item data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async createDefaultItemService(body) {
+    const item = await getItemById(body.item_id);
+    if (item) throw new Error('Item already exists');
+    return createItem(body);
+  }
+
+  /**
+   * delete item
+   *
+   * @static
+   * @returns {json} json object with item data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async deleteDefaultItemService(body) {
+    return deleteItem(body.did);
+  }
+
+  /**
+   * get default items
+   *
+   * @static
+   * @returns {json} json object with items data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async getDefaultItemService(body) {
+    const { currentPage, pageLimit, search, filter } = body;
+    if (search) {
+      return searchItems(Number(currentPage), Number(pageLimit), search);
+    }
+
+    if (filter) {
+      return filterItems(Number(currentPage), Number(pageLimit), filter);
+    }
+
+    if (Object.values(body).length) {
+      return getItems(Number(currentPage), Number(pageLimit));
+    }
+
+    return getItems();
+  }
+
+  /**
+   * create setting
+   *
+   * @static
+   * @returns {json} json object with setting data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async createSettingService(body) {
+    return createSetting(body);
+  }
+
+  /**
+   * update setting
+   *
+   * @static
+   * @returns {json} json object with setting data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async updateSettingService(body) {
+    return updateSetting(body);
+  }
+
+  /**
+   * get settings
+   *
+   * @static
+   * @returns {json} json object with settings data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async getSettingsService(body) {
+    const { currentPage, pageLimit } = body;
+
+    if (Object.values(body).length) {
+      return getSettings(Number(currentPage), Number(pageLimit));
+    }
+
+    return getSettings();
   }
 }
 export default UtilityService;
