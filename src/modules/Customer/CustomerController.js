@@ -6,7 +6,7 @@
  * - getCustomerProfile - allow customers to view their profile info
  * - updateCustomerProfile - allow customers to update their profile info like firstname, lastname, email, password, phone
  */
-import { validateCustomer, validateUpdateCustomer } from './validations';
+import { validateCustomer } from './validations';
 import CustomerService from './CustomerService';
 import { getCustomerById } from './customerRepository';
 
