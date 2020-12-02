@@ -1,14 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
-export function paginate(page, pageSize) {
-  const offset = page * pageSize;
-  const limit = pageSize;
-
-  return {
-    offset,
-    limit,
-  };
-}
-
 /**
  * @return {string}
  */
@@ -21,3 +10,15 @@ function generateUniqueId(num) {
   return `${year}${randomNumbers}`;
 }
 export const generatedReference = generateUniqueId(6);
+
+/**
+ * pad id with leading zeros
+ *
+ * @function
+ * @returns {string} generated id data
+ * @param {number} num
+ * @param {number} targetLength
+ */
+export function generateId(num, targetLength) {
+  return num.toString().padStart(targetLength, 0);
+}
