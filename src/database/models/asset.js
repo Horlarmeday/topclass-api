@@ -1,91 +1,74 @@
 import sequelizePaginate from 'sequelize-paginate';
 
 module.exports = (sequelize, DataTypes) => {
-  const Sale = sequelize.define(
-    'Sale',
+  const Asset = sequelize.define(
+    'Asset',
     {
-      slid: {
+      asid: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      amount_paid: {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      date_purchased: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      cost: {
         type: DataTypes.DECIMAL,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      ivid: {
+      depreciation: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      amount_remaining: {
-        type: DataTypes.DECIMAL,
+      duration: {
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      amount_due: {
-        type: DataTypes.DECIMAL,
+      location: {
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      status: {
-        type: DataTypes.ENUM('Pending', 'Partial', 'Paid'),
-        allowNull: false,
-        defaultValue: 'Pending',
-      },
-      cid: {
+      quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
         },
       },
-      discount: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
-      sid: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
+      sid: DataTypes.INTEGER,
     },
     {}
   );
-  Sale.associate = ({ Staff, Customer, Invoice, Payment, Receipt }) => {
+  Asset.associate = ({ Staff }) => {
     // associations can be defined here
-    Sale.belongsTo(Staff, {
+    Asset.belongsTo(Staff, {
       foreignKey: 'sid',
-    });
-
-    Sale.belongsTo(Customer, {
-      foreignKey: 'cid',
-    });
-
-    Sale.belongsTo(Invoice, {
-      foreignKey: 'ivid',
-    });
-
-    Sale.hasMany(Payment, {
-      foreignKey: 'slid',
-    });
-
-    Sale.hasMany(Receipt, {
-      foreignKey: 'slid',
     });
   };
 
-  sequelizePaginate.paginate(Sale);
-  return Sale;
+  sequelizePaginate.paginate(Asset);
+  return Asset;
 };

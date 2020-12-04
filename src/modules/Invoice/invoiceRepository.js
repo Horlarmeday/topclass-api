@@ -3,6 +3,7 @@ import { Sequelize } from 'sequelize';
 import SettingInterface from '../../helpers/contants';
 import { generateId } from '../../helpers/helper';
 import { getSettingByName } from '../Utility/utilityRepository';
+import { getSaleByInvoiceId } from '../Sale/saleRepository';
 
 const { Invoice, Staff, Customer, InvoiceItem, Sale, Waybill } = require('../../database/models');
 
@@ -37,7 +38,10 @@ export async function createInvoice(data, vatPrice = 0) {
         invoice_type,
         sid,
         vat: vatPrice,
-        invoice_numb: `TPL/INV/${generateId((await invoiceCount()) + 1, 4)}`,
+        invoice_numb:
+          invoice_type === 'proforma invoice'
+            ? `TPL/PRV/${generateId((await invoiceCount()) + 1, 4)}`
+            : `TPL/INV/${generateId((await invoiceCount()) + 1, 4)}`,
       },
       { transaction: t }
     );
@@ -76,6 +80,7 @@ export async function getInvoiceById(data) {
  */
 export async function getOneInvoice(data) {
   const vat = await getSettingByName(SettingInterface.VAT);
+  const sale = await getSaleByInvoiceId(data);
 
   const invoice = await Invoice.findOne({
     where: { ivid: data },
@@ -89,6 +94,7 @@ export async function getOneInvoice(data) {
   return {
     invoice,
     VAT: vat.value,
+    discount: sale.discount,
   };
 }
 
@@ -129,6 +135,7 @@ export async function getInvoices(currentPage = 1, pageLimit = 10) {
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }],
   });
 }
 
@@ -146,6 +153,7 @@ export async function filterInvoices(currentPage = 1, pageLimit = 10, filter) {
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }],
     where: {
       [Op.or]: [
         {
@@ -173,6 +181,7 @@ export async function searchInvoices(currentPage = 1, pageLimit = 10, search) {
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }],
     where: {
       [Op.or]: [
         {
@@ -248,6 +257,35 @@ export async function createSale(sum, data) {
   });
 }
 
+// /**
+//  * stepped down invoice
+//  *
+//  * @function
+//  * @returns {json} json object with invoice data
+//  * @param data
+//  */
+// export async function steppedDownInvoice(data) {
+//   const invoice = await Invoice.create({
+//     name: data.name,
+//     cid: data.cid,
+//     invoice_type: 'invoice',
+//     sid: data.sid,
+//     vat: data.vatPrice,
+//     invoice_numb: `TPL/INV/${generateId((await invoiceCount()) + 1, 4)}`,
+//   });
+//
+//   const items = product.map(detail => ({
+//     item: detail.item,
+//     item_id: detail.item_id,
+//     price: detail.price,
+//     quantity: detail.quantity,
+//     ivid: invoice.ivid,
+//   }));
+//
+//   await InvoiceItem.bulkCreate(items, { transaction: t });
+//   return invoice;
+// }
+
 /**
  * stepdown invoice
  *
@@ -258,7 +296,15 @@ export async function createSale(sum, data) {
 export async function stepDownInvoice(data) {
   return db.sequelize.transaction(async t => {
     const invoice = await getInvoiceById(data.invoice_id);
-    const inv = await invoice.update({ has_step_down: 1 }, { transaction: t });
+    const inv = await invoice.update(
+      {
+        has_step_down: 1,
+        invoice_type: 'invoice',
+        invoice_numb: `TPL/INV/${generateId((await invoiceCount()) + 1, 4)}`,
+      },
+      { transaction: t }
+    );
+
     const sum = await getSumOfItems(inv);
 
     await createSale(sum, inv);

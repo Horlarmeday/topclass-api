@@ -1,39 +1,35 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Staffs', {
-      sid: {
+    return queryInterface.createTable('Assets', {
+      asid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      fullname: {
+      name: {
         type: Sequelize.STRING,
       },
-      email: {
+      date_purchased: {
+        type: Sequelize.DATE,
+      },
+      cost: {
+        type: Sequelize.DECIMAL,
+      },
+      depreciation: {
+        type: Sequelize.INTEGER,
+      },
+      duration: {
         type: Sequelize.STRING,
       },
-      phone: {
+      location: {
         type: Sequelize.STRING,
       },
-      username: {
-        type: Sequelize.STRING,
+      quantity: {
+        type: Sequelize.INTEGER,
       },
-      guarantor_name: {
-        type: Sequelize.STRING,
-      },
-      guarantor_phone: {
-        type: Sequelize.STRING,
-      },
-      password: {
-        type: Sequelize.STRING,
-      },
-      role: {
-        type: Sequelize.STRING,
-      },
-      status: {
-        type: Sequelize.ENUM('Active', 'Inactive', 'Suspended'),
-        defaultValue: 'Active',
+      sid: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -46,6 +42,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Staffs');
+    return queryInterface.dropTable('Assets');
   },
 };

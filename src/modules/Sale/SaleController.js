@@ -84,6 +84,31 @@ class SaleController {
   }
 
   /**
+   * apply discount
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with sale data
+   */
+  static async applyDiscount(req, res, next) {
+    const { slid } = req.body;
+    if (!slid) return res.status(400).json('Sale id required');
+
+    try {
+      const sale = await SaleService.applyDiscountService(req.body);
+
+      return res.status(200).json({
+        message: 'Discount applied!',
+        data: sale,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
    * get all Sales
    *
    * @static

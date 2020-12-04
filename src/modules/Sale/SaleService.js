@@ -5,7 +5,7 @@ import {
   searchSales,
   createPayment,
   getSaleById,
-  generateReceipt, getStaffSales,
+  generateReceipt, getStaffSales, applyDiscount,
 } from './saleRepository';
 
 class SaleService {
@@ -31,6 +31,18 @@ class SaleService {
    */
   static async updateSaleService(body) {
     return updateSale(body);
+  }
+
+  /**
+   * apply discount
+   *
+   * @static
+   * @returns {json} json object with sale data
+   * @param body
+   * @memberOf SaleService
+   */
+  static async applyDiscountService(body) {
+    return applyDiscount(body);
   }
 
   /**

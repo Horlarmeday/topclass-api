@@ -36,6 +36,17 @@ export async function getSaleById(data) {
 }
 
 /**
+ * query sales by invoice id
+ *
+ * @function
+ * @returns {json} json object with sale data
+ * @param data
+ */
+export async function getSaleByInvoiceId(data) {
+  return Sale.findOne({ where: { ivid: data }, attributes: ['discount'] });
+}
+
+/**
  * query one sale
  *
  * @function
@@ -63,8 +74,23 @@ export async function getOneSale(data) {
  * @param data
  */
 export async function updateSale(data) {
-  const service = await getSaleById(data.slid);
-  return service.update(data);
+  const sale = await getSaleById(data.slid);
+  return sale.update(data);
+}
+
+/**
+ * update sale
+ *
+ * @function
+ * @returns {json} json object with sale data
+ * @param data
+ */
+export async function applyDiscount(data) {
+  const { slid, discount } = data;
+  const sale = await getOneSale(slid);
+  const discountAmount =
+    Number(sale.amount_due) - (Number(sale.amount_due) * Number(discount)) / 100;
+  return sale.update({ discount, amount_due: discountAmount, amount_remaining: discountAmount });
 }
 
 /**

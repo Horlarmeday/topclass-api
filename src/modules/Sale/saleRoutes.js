@@ -6,6 +6,7 @@ const router = Router();
 router.post('/payment', verify, SaleController.createPayment);
 router.post('/receipt', verify, SaleController.generateReceipt);
 router.put('/', verify, SaleController.updateSale);
+router.put('/discount', verify, SaleController.applyDiscount);
 router.get('/', verify, SaleController.getSales);
 router.get('/creditors', verify, SaleController.getCreditors);
 router.get('/staff-creditors', verify, SaleController.getStaffCreditors);

@@ -40,6 +40,20 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      guarantor_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      guarantor_phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -59,6 +73,13 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'Active',
       },
     },
+    // {
+    //   defaultScope: {
+    //     attributes: {
+    //       exclude: ['password'],
+    //     },
+    //   },
+    // },
     {
       hooks: {
         // eslint-disable-next-line no-unused-vars
