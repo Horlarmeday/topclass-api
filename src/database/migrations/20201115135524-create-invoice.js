@@ -16,10 +16,7 @@ module.exports = {
       comment: {
         type: Sequelize.STRING,
       },
-      product: {
-        type: Sequelize.JSON,
-      },
-      service: {
+      invoice_numb: {
         type: Sequelize.JSON,
       },
       is_approved: {
@@ -32,6 +29,9 @@ module.exports = {
       },
       cid: {
         type: Sequelize.INTEGER,
+      },
+      vat: {
+        type: Sequelize.FLOAT,
       },
       invoice_type: {
         type: Sequelize.STRING,

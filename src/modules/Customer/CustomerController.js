@@ -6,10 +6,9 @@
  * - getCustomerProfile - allow customers to view their profile info
  * - updateCustomerProfile - allow customers to update their profile info like firstname, lastname, email, password, phone
  */
-import { validateCustomer, validateUpdateCustomer } from './validations';
+import { validateCustomer } from './validations';
 import CustomerService from './CustomerService';
-import { getCustomerById } from './customerRepository';
-
+import { getOneCustomer } from './customerRepository';
 /**
  *
  *
@@ -31,7 +30,7 @@ class CustomerController {
 
     try {
       const customer = await CustomerService.createCustomerService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -54,7 +53,7 @@ class CustomerController {
    */
   static async getOneCustomer(req, res, next) {
     try {
-      const customer = await getCustomerById(req.params.id);
+      const customer = await getOneCustomer(req.params.id);
       if (!customer) return res.status(404).json('Customer not found');
 
       return res.status(200).json({
@@ -80,7 +79,9 @@ class CustomerController {
     if (!cid) return res.status(400).json('Customer id required');
 
     try {
-      const customer = await CustomerService.updateCustomerService(req.body);
+      const customer = await CustomerService.updateCustomerService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Customer details updated successfully',

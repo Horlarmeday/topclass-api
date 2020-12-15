@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import rateLimit from 'express-rate-limit';
+import Agendash from 'agendash2';
 
 import error from '../middleware/error';
 import staffRoutes from '../modules/Staff/staffRoutes';
@@ -13,6 +14,12 @@ import productRoutes from '../modules/Product/productRoutes';
 import utilityRoutes from '../modules/Utility/utilityRoutes';
 import serviceRoutes from '../modules/Service/serviceRoutes';
 import invoiceRoutes from '../modules/Invoice/invoiceRoutes';
+import saleRoutes from '../modules/Sale/saleRoutes';
+import dashboardRoutes from '../modules/Dashboard/dashboardRoutes';
+import expenditureRoutes from '../modules/Expenditure/expenditureRoutes';
+import reportRoutes from '../modules/Report/reportRoutes';
+import notificationRoutes from '../modules/Notification/notificationRoutes';
+import agenda from '../command/agenda';
 import './logger';
 
 const server = express();
@@ -35,12 +42,18 @@ server.use(
   })
 );
 server.use('/static', express.static(path.join(__dirname, '../public')));
+server.use('/dash', Agendash(agenda));
 server.use('/api/staffs', staffRoutes);
 server.use('/api/customers', customerRoutes);
 server.use('/api/products', productRoutes);
 server.use('/api/utilities', utilityRoutes);
 server.use('/api/services', serviceRoutes);
 server.use('/api/invoices', invoiceRoutes);
+server.use('/api/sales', saleRoutes);
+server.use('/api/dashboard', dashboardRoutes);
+server.use('/api/expenditures', expenditureRoutes);
+server.use('/api/reports', reportRoutes);
+server.use('/api/notifications', notificationRoutes);
 
 server.use((req, res, next) => {
   // set the timeout for all HTTP requests

@@ -19,6 +19,15 @@ module.exports = {
       username: {
         type: Sequelize.STRING,
       },
+      guarantor_name: {
+        type: Sequelize.STRING,
+      },
+      guarantor_phone: {
+        type: Sequelize.STRING,
+      },
+      gender: {
+        type: Sequelize.STRING,
+      },
       password: {
         type: Sequelize.STRING,
       },

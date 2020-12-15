@@ -13,7 +13,7 @@
   "author": "Mahmud Ajao",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
+    "@babel/cli": "^7.12.10",
     "@babel/core": "^7.7.2",
     "@babel/node": "^7.7.0",
     "@babel/plugin-transform-runtime": "^7.8.3",
@@ -34,6 +34,8 @@
   "dependencies": {
     "@hapi/joi": "^16.1.7",
     "@sendgrid/mail": "^6.4.0",
+    "agenda": "^3.1.0",
+    "agendash2": "^0.8.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

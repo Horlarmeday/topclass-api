@@ -22,6 +22,7 @@ module.exports = {
       selling_price: {
         type: Sequelize.DECIMAL(12, 2),
       },
+      label: Sequelize.STRING,
       comment: {
         type: Sequelize.STRING,
       },

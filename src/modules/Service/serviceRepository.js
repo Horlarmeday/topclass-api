@@ -13,7 +13,7 @@ const { Op } = Sequelize;
  * @param data
  */
 export async function createService(data) {
-  const { name, desc, quantity, selling_price, comment, sid, unit } = data;
+  const { name, desc, quantity, selling_price, comment, sid, unit, label } = data;
   return Service.create({
     name,
     desc,
@@ -22,6 +22,7 @@ export async function createService(data) {
     comment,
     sid,
     unit,
+    label,
   });
 }
 

@@ -7,7 +7,17 @@ import {
   getUnits,
   deleteLabel,
   deleteUnit,
+  createItem,
+  deleteItem,
+  getItems,
+  filterItems,
+  searchItems,
+  getItemById,
+  createSetting,
+  updateSetting,
+  getSettings,
 } from './utilityRepository';
+import { auditLog } from '../../command/schedule';
 
 class UtilityService {
   /**
@@ -19,7 +29,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async createLabelService(body) {
-    return createLabel(body);
+    const label = await createLabel(body);
+    // Audit Log
+    const content = `${body.fullname} created a new label (${label.name})`;
+    await auditLog(content, body.sid);
+
+    return label;
   }
 
   /**
@@ -31,7 +46,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async deleteLabelService(body) {
-    return deleteLabel(body.lid);
+    const label = await deleteLabel(body.lid);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted ${label.name} label`;
+    await auditLog(content, body.staff.sub);
+
+    return label;
   }
 
   /**
@@ -64,7 +84,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async createUnitService(body) {
-    return createUnit(body);
+    const unit = await createUnit(body);
+    // Audit Log
+    const content = `${body.staff.fullname} created a new unit (${unit.name})`;
+    await auditLog(content, body.staff.sub);
+
+    return unit;
   }
 
   /**
@@ -76,7 +101,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async deleteUnitService(body) {
-    return deleteUnit(body.uid);
+    const unit = await deleteUnit(body.uid);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted (${unit.name}) unit`;
+    await auditLog(content, body.staff.sub);
+
+    return unit;
   }
 
   /**
@@ -98,6 +128,119 @@ class UtilityService {
     }
 
     return getUnits();
+  }
+
+  /**
+   * create default item
+   *
+   * @static
+   * @returns {json} json object with item data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async createDefaultItemService(body) {
+    const item = await getItemById(body.item_id);
+    if (item) throw new Error('Item already exists');
+    const newItem = await createItem(body);
+    // Audit Log
+    const content = `${body.fullname} added ${newItem.item} to ${newItem.type} default items`;
+    await auditLog(content, body.sid);
+
+    return newItem;
+  }
+
+  /**
+   * delete item
+   *
+   * @static
+   * @returns {json} json object with item data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async deleteDefaultItemService(body) {
+    const item = await deleteItem(body.did);
+    // Audit Log
+    const content = `${body.staff.fullname} removed ${item.item} from ${item.type} default items`;
+    await auditLog(content, body.staff.sub);
+
+    return item;
+  }
+
+  /**
+   * get default items
+   *
+   * @static
+   * @returns {json} json object with items data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async getDefaultItemService(body) {
+    const { currentPage, pageLimit, search, filter } = body;
+    if (search) {
+      return searchItems(Number(currentPage), Number(pageLimit), search);
+    }
+
+    if (filter) {
+      return filterItems(Number(currentPage), Number(pageLimit), filter);
+    }
+
+    if (Object.values(body).length) {
+      return getItems(Number(currentPage), Number(pageLimit));
+    }
+
+    return getItems();
+  }
+
+  /**
+   * create setting
+   *
+   * @static
+   * @returns {json} json object with setting data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async createSettingService(body) {
+    const setting = await createSetting(body);
+    // Audit Log
+    const content = `${body.fullname} created a new setting (${setting.name})`;
+    await auditLog(content, body.sid);
+
+    return setting;
+  }
+
+  /**
+   * update setting
+   *
+   * @static
+   * @returns {json} json object with setting data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async updateSettingService(body) {
+    const setting = await updateSetting(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated setting (${setting.name})`;
+    await auditLog(content, body.staff.sub);
+
+    return setting;
+  }
+
+  /**
+   * get settings
+   *
+   * @static
+   * @returns {json} json object with settings data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async getSettingsService(body) {
+    const { currentPage, pageLimit } = body;
+
+    if (Object.values(body).length) {
+      return getSettings(Number(currentPage), Number(pageLimit));
+    }
+
+    return getSettings();
   }
 }
 export default UtilityService;

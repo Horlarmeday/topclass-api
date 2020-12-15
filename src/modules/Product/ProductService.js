@@ -5,6 +5,7 @@ import {
   searchProducts,
   updateProduct,
 } from './productRepository';
+import { auditLog } from '../../command/schedule';
 
 class ProductService {
   /**
@@ -16,7 +17,12 @@ class ProductService {
    * @memberOf ProductService
    */
   static async createProductService(body) {
-    return createProduct(body);
+    const product = await createProduct(body);
+    // Audit Log
+    const content = `${body.fullname} added a ${product.name} to the inventory`;
+    await auditLog(content, body.sid);
+
+    return product;
   }
 
   /**
@@ -28,7 +34,12 @@ class ProductService {
    * @memberOf ProductService
    */
   static async updateProductService(body) {
-    return updateProduct(body);
+    const product = await updateProduct(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated ${product.name}`;
+    await auditLog(content, body.staff.sub);
+
+    return product;
   }
 
   /**

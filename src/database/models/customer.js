@@ -37,6 +37,13 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
       lga: {
         type: DataTypes.STRING,
         allowNull: false,

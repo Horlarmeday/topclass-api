@@ -1,4 +1,4 @@
-import { validateLabel, validateUnit } from './validations';
+import { validateDefaultItem, validateLabel, validateSetting, validateUnit } from './validations';
 import UtilityService from './UtilityService';
 
 /**
@@ -22,7 +22,7 @@ class UtilityController {
 
     try {
       const label = await UtilityService.createLabelService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -48,7 +48,9 @@ class UtilityController {
     if (!lid) return res.status(400).json('Label id required');
 
     try {
-      const label = await UtilityService.deleteLabelService(req.body);
+      const label = await UtilityService.deleteLabelService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Label deleted successfully',
@@ -96,7 +98,7 @@ class UtilityController {
 
     try {
       const unit = await UtilityService.createUnitService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -122,7 +124,9 @@ class UtilityController {
     if (!uid) return res.status(400).json('Unit id required');
 
     try {
-      const unit = await UtilityService.deleteUnitService(req.body);
+      const unit = await UtilityService.deleteUnitService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Unit deleted successfully',
@@ -149,6 +153,158 @@ class UtilityController {
       return res.status(200).json({
         message: 'Data retrieved',
         data: units,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * create default item
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with status, item data
+   */
+  static async createDefaultItem(req, res, next) {
+    const { error } = validateDefaultItem(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
+
+    try {
+      const item = await UtilityService.createDefaultItemService(
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
+      );
+
+      return res.status(201).json({
+        message: 'Successful, item added!',
+        data: item,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get default items
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with items data
+   */
+  static async getDefaultItems(req, res, next) {
+    try {
+      const items = await UtilityService.getDefaultItemService(req.query);
+
+      return res.status(200).json({
+        message: 'Data retrieved',
+        data: items,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * delete default item
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with label data
+   */
+  static async deleteDefaultItem(req, res, next) {
+    const { did } = req.body;
+    if (!did) return res.status(400).json('item id required');
+
+    try {
+      const item = await UtilityService.deleteDefaultItemService(
+        Object.assign(req.body, { staff: req.user })
+      );
+
+      return res.status(200).json({
+        message: 'Item deleted successfully',
+        data: item,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * create setting
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with status, setting data
+   */
+  static async createSetting(req, res, next) {
+    const { error } = validateSetting(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
+
+    try {
+      const setting = await UtilityService.createSettingService(
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
+      );
+
+      return res.status(201).json({
+        message: 'Successful, setting updated!',
+        data: setting,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get settings
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with settings data
+   */
+  static async getSettings(req, res, next) {
+    try {
+      const settings = await UtilityService.getSettingsService(req.query);
+
+      return res.status(200).json({
+        message: 'Data retrieved',
+        data: settings,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * update setting
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with setting data
+   */
+  static async updateSetting(req, res, next) {
+    const { stid } = req.body;
+    if (!stid) return res.status(400).json('setting id required');
+
+    try {
+      const setting = await UtilityService.updateSettingService(
+        Object.assign(req.body, { staff: req.user })
+      );
+
+      return res.status(200).json({
+        message: 'Changes saved!',
+        data: setting,
       });
     } catch (e) {
       return next(e);

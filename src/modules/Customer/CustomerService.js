@@ -6,6 +6,7 @@ import {
   searchCustomers,
   updateCustomer,
 } from './customerRepository';
+import { auditLog } from '../../command/schedule';
 
 class CustomerService {
   /**
@@ -20,7 +21,12 @@ class CustomerService {
     const customer = await findCustomerByPhone(body.phone);
     if (customer) throw new Error('Customer account already exists');
 
-    return createCustomer(body);
+    const newCustomer = await createCustomer(body);
+    // Audit Log
+    const content = `${body.fullname} created ${newCustomer.name} customer account`;
+    await auditLog(content, body.sid);
+
+    return newCustomer;
   }
 
   /**
@@ -32,7 +38,12 @@ class CustomerService {
    * @memberOf CustomerService
    */
   static async updateCustomerService(body) {
-    return updateCustomer(body);
+    const updatedCustomer = await updateCustomer(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated ${updatedCustomer.name} customer account`;
+    await auditLog(content, body.staff.sub);
+
+    return updatedCustomer;
   }
 
   /**

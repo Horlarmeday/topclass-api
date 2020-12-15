@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Sequelize } from 'sequelize';
 
-const { Label, Unit } = require('../../database/models');
+const { Label, Unit, Item, Setting } = require('../../database/models');
 
 const { Op } = Sequelize;
 
@@ -146,5 +146,167 @@ export async function searchUnits(currentPage = 1, pageLimit = 10, search) {
         [Op.like]: `%${search}%`,
       },
     },
+  });
+}
+
+/**
+ * create default item
+ *
+ * @function
+ * @returns {json} json object with item data
+ * @param data
+ */
+export async function createItem(data) {
+  const { item, item_id, quantity, type, price, sid, label } = data;
+  return Item.create({
+    item,
+    item_id,
+    quantity,
+    type,
+    price,
+    sid,
+    label,
+  });
+}
+
+/**
+ * query item by id
+ *
+ * @function
+ * @returns {json} json object with item data
+ * @param data
+ */
+export async function getItemById(data) {
+  return Item.findByPk(data);
+}
+
+/**
+ * delete item
+ *
+ * @function
+ * @returns {json} json object with item data
+ * @param data
+ */
+export async function deleteItem(data) {
+  const item = await getItemById(data);
+  return item.destroy({ force: true });
+}
+
+/**
+ * get items
+ *
+ * @function
+ * @returns {json} json object with items data
+ * @param currentPage
+ * @param pageLimit
+ */
+export async function getItems(currentPage = 1, pageLimit = 10) {
+  return Item.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+  });
+}
+
+/**
+ * filter items
+ *
+ * @function
+ * @returns {json} json object with items data
+ * @param currentPage
+ * @param pageLimit
+ * @param filter
+ */
+export async function filterItems(currentPage = 1, pageLimit = 10, filter) {
+  return Item.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    where: {
+      type: filter,
+    },
+  });
+}
+
+/**
+ * search items
+ *
+ * @function
+ * @returns {json} json object with items data
+ * @param currentPage
+ * @param pageLimit
+ * @param search
+ */
+export async function searchItems(currentPage = 1, pageLimit = 10, search) {
+  return Item.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    where: {
+      item: {
+        [Op.like]: `%${search}%`,
+      },
+    },
+  });
+}
+
+/**
+ * query setting by id
+ *
+ * @function
+ * @returns {json} json object with setting data
+ * @param data
+ */
+export async function getSettingById(data) {
+  return Setting.findByPk(data);
+}
+
+/**
+ * query setting by name
+ *
+ * @function
+ * @returns {json} json object with setting data
+ * @param data
+ */
+export async function getSettingByName(data) {
+  return Setting.findOne({ where: { name: data }, order: [['createdAt', 'DESC']] });
+}
+
+/**
+ * update a setting
+ *
+ * @function
+ * @returns {json} json object with setting data
+ * @param data
+ */
+export async function updateSetting(data) {
+  const setting = await getSettingById(data.stid);
+  return setting.update({ data });
+}
+
+/**
+ * create a setting
+ *
+ * @function
+ * @returns {json} json object with setting data
+ * @param data
+ */
+export async function createSetting(data) {
+  return Setting.create(data);
+}
+
+/**
+ * get settings
+ *
+ * @function
+ * @returns {json} json object with settings data
+ * @param currentPage
+ * @param pageLimit
+ */
+export async function getSettings(currentPage = 1, pageLimit = 10) {
+  return Setting.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
   });
 }

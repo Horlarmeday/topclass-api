@@ -12,6 +12,7 @@ export function validateCustomer(customer) {
       .required()
       .email(),
     state: Joi.string().required(),
+    address: Joi.string().required(),
     phone: Joi.string()
       .min(11)
       .max(11)
