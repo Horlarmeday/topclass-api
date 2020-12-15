@@ -157,7 +157,7 @@ export async function searchUnits(currentPage = 1, pageLimit = 10, search) {
  * @param data
  */
 export async function createItem(data) {
-  const { item, item_id, quantity, type, price, sid } = data;
+  const { item, item_id, quantity, type, price, sid, label } = data;
   return Item.create({
     item,
     item_id,
@@ -165,6 +165,7 @@ export async function createItem(data) {
     type,
     price,
     sid,
+    label,
   });
 }
 

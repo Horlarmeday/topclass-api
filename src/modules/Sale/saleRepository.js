@@ -13,17 +13,6 @@ const {
 
 const { Op } = Sequelize;
 
-// /**
-//  * create a sale
-//  *
-//  * @function
-//  * @returns {json} json object with sale data
-//  * @param data
-//  */
-// export async function createService(data) {
-//   return Sale.create(data);
-// }
-
 /**
  * query sales by id
  *
@@ -83,13 +72,11 @@ export async function updateSale(data) {
  *
  * @function
  * @returns {json} json object with sale data
- * @param data
+ * @param discount
+ * @param discountAmount
+ * @param sale
  */
-export async function applyDiscount(data) {
-  const { slid, discount } = data;
-  const sale = await getOneSale(slid);
-  const discountAmount =
-    Number(sale.amount_due) - (Number(sale.amount_due) * Number(discount)) / 100;
+export async function applyDiscount({ discount, discountAmount, sale }) {
   return sale.update({ discount, amount_due: discountAmount, amount_remaining: discountAmount });
 }
 
@@ -248,10 +235,11 @@ export async function searchSales(currentPage = 1, pageLimit = 10, search) {
  * @param data
  */
 export async function createPayment(data) {
-  const { sid, slid, bank, payment_method, amount } = data;
+  const { sid, slid, bank, payment_method, amount, label } = data;
   const sale = await getSaleById(slid);
   return Payment.create({
     sid,
+    label,
     slid,
     ivid: sale.ivid,
     bank,
@@ -272,5 +260,80 @@ export async function generateReceipt(data) {
     sid: data.sid,
     slid: data.slid,
     ptid: data.ptid,
+  });
+}
+
+/**
+ * search payments
+ *
+ * @function
+ * @returns {json} json object with payments data
+ * @param currentPage
+ * @param pageLimit
+ * @param search
+ * @param start
+ * @param end
+ */
+export async function searchPayments(currentPage = 1, pageLimit = 10, search, start, end) {
+  return Payment.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Invoice, include: [{ model: Customer }] }],
+    where: {
+      createdAt: {
+        [Op.gte]: new Date(new Date(start).setHours(0, 0, 0)),
+        [Op.lt]: new Date(new Date(end).setHours(23, 59, 59)),
+      },
+      [Op.or]: [
+        {
+          bank: {
+            [Op.like]: `%${search}%`,
+          },
+          payment_method: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * search payments
+ *
+ * @function
+ * @returns {json} json object with payments data
+ * @param currentPage
+ * @param pageLimit
+ * @param start
+ * @param end
+ */
+export async function getPayments(currentPage = 1, pageLimit = 10, start, end) {
+  return Payment.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Invoice, include: [{ model: Customer }] }],
+    where: {
+      createdAt: {
+        [Op.gte]: new Date(new Date(start).setHours(0, 0, 0)),
+        [Op.lt]: new Date(new Date(end).setHours(23, 59, 59)),
+      },
+    },
+  });
+}
+
+/**
+ * query one payment
+ *
+ * @function
+ * @returns {json} json object with payment data
+ * @param data
+ */
+export async function getOnePayment(data) {
+  return Payment.findOne({
+    where: { ptid: data },
+    include: [{ model: Invoice, include: [{ model: Customer }, { model: InvoiceItem }] }],
   });
 }

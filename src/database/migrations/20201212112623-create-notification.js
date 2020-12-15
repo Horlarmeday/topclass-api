@@ -1,33 +1,33 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Items', {
-      did: {
+    return queryInterface.createTable('Notifications', {
+      nid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      item: {
-        type: Sequelize.STRING,
-      },
-      item_type: {
-        type: Sequelize.STRING,
-      },
-      item_id: {
-        type: Sequelize.INTEGER,
-      },
-      price: {
-        type: Sequelize.DECIMAL,
-      },
-      quantity: {
-        type: Sequelize.INTEGER,
-      },
-      type: {
-        type: Sequelize.STRING,
-      },
-      label: Sequelize.STRING,
       sid: {
         type: Sequelize.INTEGER,
+      },
+      content: {
+        type: Sequelize.TEXT,
+      },
+      is_read: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      read_at: {
+        type: Sequelize.DATE,
+      },
+      title: {
+        type: Sequelize.STRING,
+      },
+      category: {
+        type: Sequelize.STRING,
+      },
+      type: {
+        type: Sequelize.ENUM('Group', 'Individual'),
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +40,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Items');
+    return queryInterface.dropTable('Notifications');
   },
 };

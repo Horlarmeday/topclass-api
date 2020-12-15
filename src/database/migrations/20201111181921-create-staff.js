@@ -25,6 +25,9 @@ module.exports = {
       guarantor_phone: {
         type: Sequelize.STRING,
       },
+      gender: {
+        type: Sequelize.STRING,
+      },
       password: {
         type: Sequelize.STRING,
       },

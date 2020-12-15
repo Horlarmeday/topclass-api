@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       bank: DataTypes.STRING,
+      // label: DataTypes.STRING,
       payment_method: DataTypes.STRING,
     },
     {}

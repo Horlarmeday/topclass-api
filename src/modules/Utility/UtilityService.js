@@ -14,8 +14,10 @@ import {
   searchItems,
   getItemById,
   createSetting,
-  updateSetting, getSettings,
+  updateSetting,
+  getSettings,
 } from './utilityRepository';
+import { auditLog } from '../../command/schedule';
 
 class UtilityService {
   /**
@@ -27,7 +29,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async createLabelService(body) {
-    return createLabel(body);
+    const label = await createLabel(body);
+    // Audit Log
+    const content = `${body.fullname} created a new label (${label.name})`;
+    await auditLog(content, body.sid);
+
+    return label;
   }
 
   /**
@@ -39,7 +46,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async deleteLabelService(body) {
-    return deleteLabel(body.lid);
+    const label = await deleteLabel(body.lid);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted ${label.name} label`;
+    await auditLog(content, body.staff.sub);
+
+    return label;
   }
 
   /**
@@ -72,7 +84,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async createUnitService(body) {
-    return createUnit(body);
+    const unit = await createUnit(body);
+    // Audit Log
+    const content = `${body.staff.fullname} created a new unit (${unit.name})`;
+    await auditLog(content, body.staff.sub);
+
+    return unit;
   }
 
   /**
@@ -84,7 +101,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async deleteUnitService(body) {
-    return deleteUnit(body.uid);
+    const unit = await deleteUnit(body.uid);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted (${unit.name}) unit`;
+    await auditLog(content, body.staff.sub);
+
+    return unit;
   }
 
   /**
@@ -119,7 +141,12 @@ class UtilityService {
   static async createDefaultItemService(body) {
     const item = await getItemById(body.item_id);
     if (item) throw new Error('Item already exists');
-    return createItem(body);
+    const newItem = await createItem(body);
+    // Audit Log
+    const content = `${body.fullname} added ${newItem.item} to ${newItem.type} default items`;
+    await auditLog(content, body.sid);
+
+    return newItem;
   }
 
   /**
@@ -131,7 +158,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async deleteDefaultItemService(body) {
-    return deleteItem(body.did);
+    const item = await deleteItem(body.did);
+    // Audit Log
+    const content = `${body.staff.fullname} removed ${item.item} from ${item.type} default items`;
+    await auditLog(content, body.staff.sub);
+
+    return item;
   }
 
   /**
@@ -168,7 +200,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async createSettingService(body) {
-    return createSetting(body);
+    const setting = await createSetting(body);
+    // Audit Log
+    const content = `${body.fullname} created a new setting (${setting.name})`;
+    await auditLog(content, body.sid);
+
+    return setting;
   }
 
   /**
@@ -180,7 +217,12 @@ class UtilityService {
    * @memberOf UtilityService
    */
   static async updateSettingService(body) {
-    return updateSetting(body);
+    const setting = await updateSetting(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated setting (${setting.name})`;
+    await auditLog(content, body.staff.sub);
+
+    return setting;
   }
 
   /**

@@ -32,7 +32,9 @@ class StaffController {
     if (error) return res.status(400).json(error.details[0].message);
 
     try {
-      const staff = await StaffService.createUserService(req.body);
+      const staff = await StaffService.createUserService(
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
+      );
 
       return res.status(201).json({
         message: 'Successful, account created!',
@@ -135,7 +137,9 @@ class StaffController {
    */
   static async updateStaffProfile(req, res, next) {
     try {
-      const staff = await StaffService.updateStaffService(req.body);
+      const staff = await StaffService.updateStaffService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Profile updated successfully',
@@ -179,7 +183,9 @@ class StaffController {
    */
   static async changePassword(req, res, next) {
     try {
-      const staff = await StaffService.changePasswordService(req.body, req.user.sub);
+      const staff = await StaffService.changePasswordService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Password changed!',
@@ -204,7 +210,10 @@ class StaffController {
     if (error) return res.status(400).json(error.details[0].message);
 
     try {
-      const staff = StaffService.forgotPasswordService(req.body);
+      const staff = await StaffService.forgotPasswordService(
+        Object.assign(req.body, { staff: req.user })
+      );
+
       return res.status(200).json({
         message: 'A new password has been sent to your phone!',
         data: staff,

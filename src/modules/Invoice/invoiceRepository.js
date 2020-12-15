@@ -5,7 +5,15 @@ import { generateId } from '../../helpers/helper';
 import { getSettingByName } from '../Utility/utilityRepository';
 import { getSaleByInvoiceId } from '../Sale/saleRepository';
 
-const { Invoice, Staff, Customer, InvoiceItem, Sale, Waybill } = require('../../database/models');
+const {
+  Invoice,
+  Staff,
+  Customer,
+  InvoiceItem,
+  Sale,
+  Waybill,
+  DispenseHistory,
+} = require('../../database/models');
 
 const { Op } = Sequelize;
 const db = require('../../database/models/index');
@@ -30,7 +38,7 @@ export async function invoiceCount() {
  */
 export async function createInvoice(data, vatPrice = 0) {
   const { name, cid, invoice_type, product, sid } = data;
-  const result = await db.sequelize.transaction(async t => {
+  return db.sequelize.transaction(async t => {
     const invoice = await Invoice.create(
       {
         name,
@@ -51,13 +59,13 @@ export async function createInvoice(data, vatPrice = 0) {
       item_id: detail.item_id,
       price: detail.price,
       quantity: detail.quantity,
+      label: detail.label,
       ivid: invoice.ivid,
     }));
 
     await InvoiceItem.bulkCreate(items, { transaction: t });
     return invoice;
   });
-  return result;
 }
 
 /**
@@ -94,8 +102,21 @@ export async function getOneInvoice(data) {
   return {
     invoice,
     VAT: vat.value,
-    discount: sale.discount,
+    discount: sale ? sale.discount : 0,
   };
+}
+
+/**
+ * query invoice account in the DB by invoice id
+ *
+ * @function
+ * @returns {json} json object with invoice items data
+ * @param data
+ */
+export async function getInvoiceItems(data) {
+  return InvoiceItem.findAll({
+    where: { ivid: data },
+  });
 }
 
 /**
@@ -108,6 +129,47 @@ export async function getOneInvoice(data) {
 export async function updateInvoice(data) {
   const invoice = await getInvoiceById(data.ivid);
   return invoice.update(data);
+}
+
+/**
+ * query invoice account in the DB by invoice item id
+ *
+ * @function
+ * @returns {json} json object with invoice item data
+ * @param data
+ */
+export async function getItemById(data) {
+  return InvoiceItem.findByPk(data.inv_id);
+}
+
+/**
+ * dispense invoice item
+ *
+ * @function
+ * @returns {json} json object with invoice item data
+ * @param item
+ */
+export async function dispenseItem(item) {
+  return item.update({ status: 'Dispensed' });
+}
+
+/**
+ * create invoice in the DB
+ *
+ * @function
+ * @returns {json} json object with invoice data
+ * @param data
+ * @param leftOver
+ * @param staff
+ */
+export async function createDispenseHistory(data, leftOver, staff) {
+  await DispenseHistory.create({
+    name: data.item,
+    item_id: data.item_id,
+    sid: staff,
+    quantity: data.quantity,
+    remain_quantity: leftOver,
+  });
 }
 
 /**
@@ -161,6 +223,31 @@ export async function filterInvoices(currentPage = 1, pageLimit = 10, filter) {
         },
         {
           invoice_type: filter,
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * filter invoices
+ *
+ * @function
+ * @returns {json} json object with invoices data
+ * @param currentPage
+ * @param pageLimit
+ * @param filter
+ */
+export async function steppedDownInvoices(currentPage = 1, pageLimit = 10, filter) {
+  return Invoice.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }],
+    where: {
+      [Op.or]: [
+        {
+          has_step_down: filter,
         },
       ],
     },

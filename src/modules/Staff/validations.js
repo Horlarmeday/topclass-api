@@ -14,8 +14,15 @@ export function validateStaff(staff) {
       .min(5)
       .max(255)
       .required(),
+    gender: Joi.string().required(),
+    guarantor_name: Joi.string().required(),
+    guarantor_phone: Joi.string()
+      .min(11)
+      .max(11)
+      .required(),
     phone: Joi.string()
       .min(11)
+      .max(11)
       .required(),
     role: Joi.string().required(),
     username: Joi.string().required(),

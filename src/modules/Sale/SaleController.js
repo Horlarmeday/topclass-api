@@ -1,6 +1,7 @@
-import { creditors, getOneSale, staffCreditors } from './saleRepository';
+import { creditors, getOnePayment, getOneSale, staffCreditors } from './saleRepository';
 import SaleService from './SaleService';
 import { validatePayment } from './validations';
+import ProductService from '../Product/ProductService';
 
 /**
  *
@@ -8,33 +9,6 @@ import { validatePayment } from './validations';
  * @class SaleController
  */
 class SaleController {
-  // /**
-  //  * create a sale record
-  //  *
-  //  * @static
-  //  * @param {object} req express request object
-  //  * @param {object} res express response object
-  //  * @param {object} next next middleware
-  //  * @returns {json} json object with status, service data
-  //  */
-  // static async createService(req, res, next) {
-  //   const { error } = validateSale(req.body);
-  //   if (error) return res.status(400).json(error.details[0].message);
-  //
-  //   try {
-  //     const sale = await SaleService.createSaleService(
-  //       Object.assign(req.body, { sid: req.user.sub })
-  //     );
-  //
-  //     return res.status(201).json({
-  //       message: 'Successful, sale created!',
-  //       data: sale,
-  //     });
-  //   } catch (e) {
-  //     return next(e);
-  //   }
-  // }
-
   /**
    * get one sale
    *
@@ -72,7 +46,9 @@ class SaleController {
     if (!slid) return res.status(400).json('Sale id required');
 
     try {
-      const sale = await SaleService.updateSaleService(req.body);
+      const sale = await SaleService.updateSaleService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Data updated successfully',
@@ -97,7 +73,9 @@ class SaleController {
     if (!slid) return res.status(400).json('Sale id required');
 
     try {
-      const sale = await SaleService.applyDiscountService(req.body);
+      const sale = await SaleService.applyDiscountService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Discount applied!',
@@ -195,7 +173,7 @@ class SaleController {
 
     try {
       const payment = await SaleService.createPaymentService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -219,12 +197,61 @@ class SaleController {
   static async generateReceipt(req, res, next) {
     try {
       const receipt = await SaleService.generateReceiptService(
-        Object.assign(req.body, { sid: req.user.sub, slid: req.params.id })
+        Object.assign(req.body, {
+          sid: req.user.sub,
+          slid: req.params.id,
+          fullname: req.user.fullname,
+        })
       );
 
       return res.status(201).json({
         message: 'Successful, receipt generated!',
         data: receipt,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get all payments
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with sales data
+   */
+  static async getPayments(req, res, next) {
+    try {
+      const payments = await SaleService.getPaymentService(req.query);
+
+      return res.status(200).json({
+        message: 'Data retrieved',
+        data: payments,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get one sale
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with sales data
+   */
+  static async getOnePayment(req, res, next) {
+    try {
+      const payment = await getOnePayment(req.params.id);
+      if (!payment) return res.status(404).json('Unknown Resource');
+
+      return res.status(200).json({
+        message: 'Success',
+        data: payment,
       });
     } catch (e) {
       return next(e);

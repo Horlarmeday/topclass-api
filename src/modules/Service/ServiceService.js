@@ -1,4 +1,5 @@
 import { createService, getServices, searchServices, updateService } from './serviceRepository';
+import { auditLog } from '../../command/schedule';
 
 class ServiceService {
   /**
@@ -10,7 +11,12 @@ class ServiceService {
    * @memberOf ServiceService
    */
   static async createServiceService(body) {
-    return createService(body);
+    const service = await createService(body);
+    // Audit Log
+    const content = `${body.fullname} created a ${service.name} service`;
+    await auditLog(content, body.sid);
+
+    return service;
   }
 
   /**
@@ -22,7 +28,12 @@ class ServiceService {
    * @memberOf ServiceService
    */
   static async updateServiceService(body) {
-    return updateService(body);
+    const updatedService = await updateService(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated ${updatedService.name} service`;
+    await auditLog(content, body.staff.sub);
+
+    return updatedService;
   }
 
   /**

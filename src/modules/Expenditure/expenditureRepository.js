@@ -179,3 +179,22 @@ export async function searchExpenses(currentPage = 1, pageLimit = 10, search) {
     },
   });
 }
+
+/**
+ * export expenses
+ *
+ * @function
+ * @returns {json} json object with expenses data
+ * @param search
+ */
+export async function exportExpenses(search) {
+  return Expense.findAll({
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Staff }],
+    where: {
+      name: {
+        [Op.like]: `%${search}%`,
+      },
+    },
+  });
+}

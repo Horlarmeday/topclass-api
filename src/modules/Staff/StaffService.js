@@ -10,6 +10,7 @@ import {
   searchStaffs,
   updateStaff,
 } from './staffRepository';
+import { auditLog } from '../../command/schedule';
 
 const uuidv1 = require('uuid/v4');
 
@@ -26,7 +27,12 @@ class StaffService {
     const staff = await findStaffByPhoneOrUsername({ phone: body.phone, username: body.username });
     if (staff) throw new Error('Staff already exists');
 
-    return createUser(body);
+    const user = await createUser(body);
+    // Audit Log
+    const content = `${body.fullname} created ${user.fullname} staff account`;
+    await auditLog(content, body.sid);
+
+    return user;
   }
 
   /**
@@ -46,6 +52,12 @@ class StaffService {
 
     const token = staff.generateAuthToken();
 
+    // Audit Log
+    const content = `${
+      staff.fullname
+    } last logged in on ${new Date().toDateString()}, ${new Date().toLocaleTimeString()}`;
+    await auditLog(content, staff.sid);
+
     return {
       token,
       staff,
@@ -61,7 +73,12 @@ class StaffService {
    * @memberOf StaffService
    */
   static async updateStaffService(body) {
-    return updateStaff(body);
+    const staff = await updateStaff(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated ${staff.fullname} staff account`;
+    await auditLog(content, body.staff.sub);
+
+    return staff;
   }
 
   /**
@@ -95,11 +112,10 @@ class StaffService {
    * @static
    * @returns {json} json object with user data
    * @param body
-   * @param sub
    * @memberOf StaffService
    */
-  static async changePasswordService(body, sub) {
-    const staff = await getStaffById(sub);
+  static async changePasswordService(body) {
+    const staff = await getStaffById(body.staff.sub);
     if (!staff) throw new Error('Invalid user id');
 
     const { newPassword, oldPassword, confirmPassword } = body;
@@ -112,6 +128,11 @@ class StaffService {
     const salt = await bcrypt.genSalt(16);
     staff.password = await bcrypt.hash(newPassword, salt);
     await staff.save();
+
+    // Audit Log
+    const female = `${body.staff.fullname} changed her password`;
+    const male = `${body.staff.fullname} changed his password`;
+    await auditLog(staff.gender === 'Female' ? female : male, body.staff.sub);
 
     return staff;
   }
@@ -134,6 +155,10 @@ class StaffService {
     const salt = await bcrypt.genSalt(16);
     staff.password = await bcrypt.hash(tempPassword, salt);
     await staff.save();
+
+    // Audit Log
+    const content = `${body.staff.fullname} requested for a forgot password`;
+    await auditLog(content, body.staff.sub);
 
     return staff;
   }

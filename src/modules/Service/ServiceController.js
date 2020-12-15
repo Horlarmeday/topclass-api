@@ -31,7 +31,7 @@ class ServiceController {
 
     try {
       const service = await ServiceService.createServiceService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -80,7 +80,9 @@ class ServiceController {
     if (!svid) return res.status(400).json('Service id required');
 
     try {
-      const service = await ServiceService.updateServiceService(req.body);
+      const service = await ServiceService.updateServiceService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Data updated successfully',

@@ -5,22 +5,17 @@ import {
   searchSales,
   createPayment,
   getSaleById,
-  generateReceipt, getStaffSales, applyDiscount,
+  generateReceipt,
+  getStaffSales,
+  applyDiscount,
+  searchPayments,
+  getPayments,
+  getOneSale,
 } from './saleRepository';
+import { startOfTheYear } from '../../helpers/helper';
+import { auditLog } from '../../command/schedule';
 
 class SaleService {
-  // /**
-  //  * create a sale
-  //  *
-  //  * @static
-  //  * @returns {json} json object with sale data
-  //  * @param body
-  //  * @memberOf SaleService
-  //  */
-  // static async createSaleService(body) {
-  //   return createSale(body);
-  // }
-
   /**
    * update sale
    *
@@ -30,7 +25,12 @@ class SaleService {
    * @memberOf SaleService
    */
   static async updateSaleService(body) {
-    return updateSale(body);
+    const sale = await updateSale(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated sale ${sale.slid}`;
+    await auditLog(content, body.staff.sub);
+
+    return sale;
   }
 
   /**
@@ -42,7 +42,15 @@ class SaleService {
    * @memberOf SaleService
    */
   static async applyDiscountService(body) {
-    return applyDiscount(body);
+    const { slid, discount } = body;
+    const sale = await getOneSale(slid);
+    const discountAmount =
+      Number(sale.amount_due) - (Number(sale.amount_due) * Number(discount)) / 100;
+    // Audit Log
+    const content = `${body.staff.fullname} applied ${discount}% discount to ${sale.Customer.name} ${sale.Invoice.name} sale`;
+    await auditLog(content, body.staff.sub);
+
+    return applyDiscount({ discount, discountAmount, sale });
   }
 
   /**
@@ -109,8 +117,14 @@ class SaleService {
     }
 
     if (body.should_generate) {
+      // Audit Log
+      const content = `${body.fullname} generated a ₦${payment.amount} receipt`;
+      await auditLog(content, body.sid);
       await generateReceipt(payment);
     }
+    // Audit Log
+    const content = `${body.fullname} added a payment of ₦${payment.amount}`;
+    await auditLog(content, body.sid);
 
     return updatedSale;
   }
@@ -124,7 +138,42 @@ class SaleService {
    * @memberOf SaleService
    */
   static async generateReceiptService(body) {
+    // Audit Log
+    const content = `${body.fullname} generated a receipt`;
+    await auditLog(content, body.sid);
+
     return generateReceipt(body);
+  }
+
+  /**
+   * get payments
+   *
+   * @static
+   * @returns {json} json object with sales data
+   * @param body
+   * @memberOf SaleService
+   */
+  static async getPaymentService(body) {
+    let { start, end } = body;
+    const { currentPage, pageLimit, search } = body;
+
+    if (!start) {
+      start = startOfTheYear();
+    }
+
+    if (!end) {
+      end = new Date();
+    }
+
+    if (search) {
+      return searchPayments(Number(currentPage), Number(pageLimit), search, start, end);
+    }
+
+    if (Object.values(body).length) {
+      return getPayments(Number(currentPage), Number(pageLimit), start, end);
+    }
+
+    return getSales();
   }
 }
 export default SaleService;

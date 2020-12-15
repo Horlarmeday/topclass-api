@@ -1,255 +1,163 @@
 /* eslint-disable camelcase */
 import { Sequelize } from 'sequelize';
 
-import { generateId } from '../../helpers/helper';
-
-const { Invoice, Staff, Customer, InvoiceItem, Sale } = require('../../database/models');
+const { Invoice, Payment, Customer, Asset, Sale, Waybill, DispenseHistory } = require('../../database/models');
 
 const { Op } = Sequelize;
-const db = require('../../database/models/index');
+// const db = require('../../database/models/index');
 
 /**
- * count number of invoice generated
+ * accountant estimated card figures
  *
  * @function
- * @returns {json} json object with invoice data
+ * @returns {json} json object with card data
  */
-export async function invoiceCount() {
-  return Invoice.count();
+export async function accountantCard() {
+  const customers = Customer.count();
+  const steppedDownInvoice = Invoice.count({ where: { has_step_down: 1 } });
+  const assets = Asset.count();
+  const revenue = Payment.sum('amount');
+
+  const [customerCount, invoiceCount, assetsCount, generatedAmount] = await Promise.all([
+    customers,
+    steppedDownInvoice,
+    assets,
+    revenue,
+  ]);
+
+  return {
+    customerCount,
+    invoiceCount,
+    assetsCount,
+    generatedAmount,
+  };
 }
 
 /**
- * create invoice in the DB
+ *superadmin  estimated card figures
  *
  * @function
- * @returns {json} json object with invoice data
- * @param data
+ * @returns {json} json object with card data
  */
-export async function createInvoice(data) {
-  const { name, cid, invoice_type, product, sid } = data;
-  const result = await db.sequelize.transaction(async t => {
-    const invoice = await Invoice.create(
-      {
-        name,
-        cid,
-        invoice_type,
-        sid,
-        invoice_numb: `TPL/INV/${generateId((await invoiceCount()) + 1, 4)}`,
-      },
-      { transaction: t }
-    );
+export async function superAdminCard() {
+  const customers = Customer.count();
+  const sales = Sale.count();
+  const debtors = Sale.count({ where: { [Op.not]: { status: 'Paid' } } });
+  const revenue = Payment.sum('amount');
 
-    const items = product.map(detail => ({
-      item: detail.item,
-      item_id: detail.item_id,
-      price: detail.price,
-      quantity: detail.quantity,
-      ivid: invoice.ivid,
-    }));
+  const [customerCount, salesCount, debtorsCount, generatedAmount] = await Promise.all([
+    customers,
+    sales,
+    debtors,
+    revenue,
+  ]);
 
-    await InvoiceItem.bulkCreate(items, { transaction: t });
-    return invoice;
-  });
-  return result;
+  return {
+    customerCount,
+    salesCount,
+    debtorsCount,
+    generatedAmount,
+  };
 }
 
 /**
- * query invoice account in the DB by invoice id
+ * admin estimated card figures
  *
  * @function
- * @returns {json} json object with invoice data
- * @param data
+ * @returns {json} json object with card data
  */
-export async function getInvoiceById(data) {
-  return Invoice.findByPk(data);
+export async function adminCard() {
+  const customers = Customer.count();
+  const sales = Sale.count();
+  const invoice = Invoice.count();
+  const revenue = Payment.sum('amount');
+
+  const [customerCount, salesCount, invoiceCount, generatedAmount] = await Promise.all([
+    customers,
+    sales,
+    invoice,
+    revenue,
+  ]);
+
+  return {
+    customerCount,
+    salesCount,
+    invoiceCount,
+    generatedAmount,
+  };
 }
 
 /**
- * query invoice account in the DB by invoice id
+ * secretary estimated card figures
  *
  * @function
- * @returns {json} json object with invoice data
- * @param data
+ * @returns {json} json object with card data
  */
-export async function getOneInvoice(data) {
-  return Invoice.findOne({
-    where: { ivid: data },
-    include: [
-      { model: Staff, attributes: { exclude: ['password'] } },
-      { model: Customer },
-      { model: InvoiceItem },
-    ],
-  });
+export async function secretaryCard(data) {
+  const customers = Customer.count();
+  const invoice = Invoice.count({ where: { sid: data } });
+  const assets = Asset.count();
+
+  const [customerCount, invoiceCount, assetsCount] = await Promise.all([
+    customers,
+    invoice,
+    assets,
+  ]);
+
+  return {
+    customerCount,
+    invoiceCount,
+    assetsCount,
+  };
 }
 
 /**
- * update invoice
+ * storekeeper estimated card figures
  *
  * @function
- * @returns {json} json object with invoice data
- * @param data
+ * @returns {json} json object with card data
  */
-export async function updateInvoice(data) {
-  const invoice = await getInvoiceById(data.ivid);
-  return invoice.update(data);
+export async function storeKeeperCard(data) {
+  const customers = Customer.count();
+  const invoice = Invoice.count({ where: { sid: data } });
+  const waybill = Waybill.count({ where: { sid: data } });
+  const history = DispenseHistory.count({ where: { sid: data } });
+
+  const [customerCount, invoiceCount, waybillCount, historyCount] = await Promise.all([
+    customers,
+    invoice,
+    waybill,
+    history,
+  ]);
+
+  return {
+    customerCount,
+    invoiceCount,
+    waybillCount,
+    historyCount,
+  };
 }
 
 /**
- * delete invoice
+ * storekeeper estimated card figures
  *
  * @function
- * @returns {json} json object with invoice data
- * @param data
+ * @returns {json} json object with card data
  */
-export async function deleteInvoice(data) {
-  const invoice = await getInvoiceById(data);
-  return invoice.destroy({ force: true });
-}
+export async function workshopCard(data) {
+  const customers = Customer.count();
+  const invoice = Invoice.count({ where: { sid: data } });
+  const assets = Asset.count({ where: { sid: data } });
 
-/** *********************
-/// ACCOUNTANT DASHBOARD
-/*************************
+  const [customerCount, invoiceCount, assetsCount] = await Promise.all([
+    customers,
+    invoice,
+    assets,
+  ]);
 
-/**
- * get invoices
- *
- * @function
- * @returns {json} json object with invoices data
- * @param currentPage
- * @param pageLimit
- */
-export async function getInvoices(currentPage = 1, pageLimit = 10) {
-  return Invoice.paginate({
-    page: currentPage,
-    paginate: pageLimit,
-    order: [['createdAt', 'DESC']],
-    where: {
-      is_approved: 1,
-    },
-  });
-}
-
-/**
- * search invoices
- *
- * @function
- * @returns {json} json object with invoices data
- * @param currentPage
- * @param pageLimit
- * @param search
- */
-export async function searchInvoices(currentPage = 1, pageLimit = 10, search) {
-  return Invoice.paginate({
-    page: currentPage,
-    paginate: pageLimit,
-    order: [['createdAt', 'DESC']],
-    where: {
-      is_approved: 1,
-      [Op.or]: [
-        {
-          name: {
-            [Op.like]: `%${search}%`,
-          },
-        },
-        {
-          invoice_type: {
-            [Op.like]: `%${search}%`,
-          },
-        },
-      ],
-    },
-  });
-}
-
-/**
- * get sales
- *
- * @function
- * @returns {json} json object with sales data
- * @param currentPage
- * @param pageLimit
- */
-export async function getSales(currentPage = 1, pageLimit = 10) {
-  return Sale.paginate({
-    page: currentPage,
-    paginate: pageLimit,
-    order: [['createdAt', 'DESC']],
-    include: [{ model: Customer }, { model: Invoice }],
-    where: {
-      [Op.ne]: {
-        status: 'Paid',
-      },
-    },
-  });
-}
-
-/**
- * search sales
- *
- * @function
- * @returns {json} json object with sales data
- * @param currentPage
- * @param pageLimit
- * @param search
- */
-export async function searchSales(currentPage = 1, pageLimit = 10, search) {
-  return Sale.paginate({
-    page: currentPage,
-    paginate: pageLimit,
-    order: [['createdAt', 'DESC']],
-    where: {
-      [Op.ne]: {
-        status: 'Paid',
-      },
-    },
-    include: [
-      {
-        model: Customer,
-        where: {
-          [Op.or]: [
-            {
-              name: {
-                [Op.like]: `%${search}%`,
-              },
-            },
-          ],
-        },
-      },
-      { model: Invoice },
-    ],
-  });
-}
-
-/**
- * sum of items
- *
- * @function
- * @returns {json} json object with items total data
- * @param data
- */
-export async function getSumOfItems(data) {
-  return InvoiceItem.findAll({
-    where: { ivid: data.ivid },
-    attributes: [[Sequelize.fn('sum', Sequelize.col('price')), 'total']],
-    raw: true,
-  });
-}
-
-/**
- * create sale
- *
- * @function
- * @returns {json} json object with invoice data
- * @param sum
- * @param data
- */
-export async function createSale(sum, data) {
-  return Sale.create({
-    amount_remaining: sum[0].total,
-    ivid: data.ivid,
-    amount_due: sum[0].total,
-    amount_paid: 0,
-    cid: data.cid,
-    sid: data.sid,
-  });
+  return {
+    customerCount,
+    invoiceCount,
+    assetsCount,
+  };
 }

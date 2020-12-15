@@ -8,6 +8,7 @@ import {
   searchExpenses,
   deleteExpense,
 } from './expenditureRepository';
+import { auditLog } from '../../command/schedule';
 
 class ExpenditureService {
   /**
@@ -19,7 +20,12 @@ class ExpenditureService {
    * @memberOf ExpenditureService
    */
   static async createAssetService(body) {
-    return createAsset(body);
+    const createdAsset = await createAsset(body);
+    // Audit Log
+    const content = `${body.fullname} created a (${createdAsset.name}) asset`;
+    await auditLog(content, body.sid);
+
+    return createdAsset;
   }
 
   /**
@@ -31,7 +37,12 @@ class ExpenditureService {
    * @memberOf ExpenditureService
    */
   static async deleteAssetService(body) {
-    return deleteAsset(body.asid);
+    const deletedAsset = await deleteAsset(body.asid);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted ${deletedAsset.name} from assets`;
+    await auditLog(content, body.staff.sub);
+
+    return deletedAsset;
   }
 
   /**
@@ -64,7 +75,12 @@ class ExpenditureService {
    * @memberOf ExpenditureService
    */
   static async createExpenseService(body) {
-    return createExpense(body);
+    const createdExpense = await createExpense(body);
+    // Audit Log
+    const content = `${body.fullname} created a ${createdExpense.name} expense`;
+    await auditLog(content, body.sid);
+
+    return createdExpense;
   }
 
   /**
@@ -76,7 +92,12 @@ class ExpenditureService {
    * @memberOf ExpenditureService
    */
   static async deleteExpenseService(body) {
-    return deleteExpense(body.exid);
+    const deletedExpense = await deleteExpense(body.exid);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted (${deletedExpense.name}) from expenses`;
+    await auditLog(content, body.staff.sub);
+
+    return deletedExpense;
   }
 
   /**

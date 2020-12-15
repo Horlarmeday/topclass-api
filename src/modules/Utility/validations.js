@@ -17,8 +17,9 @@ export function validateUnit(unit) {
 export function validateDefaultItem(item) {
   const schema = Joi.object({
     type: Joi.string().required(),
-    item: Joi.string().required(),
     item_id: Joi.number().required(),
+    item: Joi.string().required(),
+    label: Joi.string().required(),
     quantity: Joi.number().required(),
     price: Joi.number().required(),
   });

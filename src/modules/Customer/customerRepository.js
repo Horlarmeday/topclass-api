@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 
-const { Customer } = require('../../database/models');
+const { Customer, Staff } = require('../../database/models');
 
 const { Op } = Sequelize;
 
@@ -24,6 +24,20 @@ export async function createCustomer(data) {
  */
 export async function getCustomerById(data) {
   return Customer.findByPk(data);
+}
+
+/**
+ * query customer account by customer id
+ *
+ * @function
+ * @returns {json} json object with customer data
+ * @param data
+ */
+export async function getOneCustomer(data) {
+  return Customer.findOne({
+    where: { cid: data },
+    include: [{ model: Staff, attributes: { exclude: ['password'] } }],
+  });
 }
 
 /**

@@ -31,7 +31,7 @@ class ProductController {
 
     try {
       const product = await ProductService.createProductService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -80,7 +80,9 @@ class ProductController {
     if (!pid) return res.status(400).json('Product id required');
 
     try {
-      const product = await ProductService.updateProductService(req.body);
+      const product = await ProductService.updateProductService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Data updated successfully',

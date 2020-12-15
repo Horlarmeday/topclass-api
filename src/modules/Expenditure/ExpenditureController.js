@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { validateAsset, validateExpense } from './validations';
 import ExpenditureService from './ExpenditureService';
+
 /**
  *
  *
@@ -22,7 +23,7 @@ class ExpenditureController {
 
     try {
       const asset = await ExpenditureService.createAssetService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -48,7 +49,9 @@ class ExpenditureController {
     if (!asid) return res.status(400).json('Asset id required!');
 
     try {
-      const asset = await ExpenditureService.deleteAssetService(req.body);
+      const asset = await ExpenditureService.deleteAssetService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Asset deleted successfully',
@@ -96,7 +99,7 @@ class ExpenditureController {
 
     try {
       const expense = await ExpenditureService.createExpenseService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -122,7 +125,9 @@ class ExpenditureController {
     if (!exid) return res.status(400).json('Asset id required!');
 
     try {
-      const expense = await ExpenditureService.deleteExpenseService(req.body);
+      const expense = await ExpenditureService.deleteExpenseService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Expenditure deleted successfully',

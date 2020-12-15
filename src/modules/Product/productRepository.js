@@ -51,6 +51,18 @@ export async function updateProduct(data) {
 }
 
 /**
+ * update product quantity
+ *
+ * @function
+ * @returns {json} json object with product data
+ * @param product
+ * @param leftOver
+ */
+export async function updateProductQuantity(product, leftOver) {
+  return product.update({ quantity: leftOver });
+}
+
+/**
  * get products
  *
  * @function

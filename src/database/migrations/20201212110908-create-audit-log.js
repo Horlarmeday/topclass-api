@@ -1,31 +1,18 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Payments', {
-      ptid: {
+    return queryInterface.createTable('AuditLogs', {
+      alid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      amount: {
-        type: Sequelize.DECIMAL(12, 2),
-      },
-      ivid: {
-        type: Sequelize.INTEGER,
-      },
-      slid: {
-        type: Sequelize.INTEGER,
+      content: {
+        type: Sequelize.TEXT,
       },
       sid: {
         type: Sequelize.INTEGER,
       },
-      bank: {
-        type: Sequelize.STRING,
-      },
-      payment_method: {
-        type: Sequelize.STRING,
-      },
-      label: Sequelize.STRING,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -37,6 +24,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Payments');
+    return queryInterface.dropTable('AuditLogs');
   },
 };

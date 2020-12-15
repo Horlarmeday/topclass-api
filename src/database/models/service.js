@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       comment: DataTypes.STRING,
+      label: DataTypes.STRING,
       unit: {
         type: DataTypes.STRING,
         allowNull: false,

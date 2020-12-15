@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { validateInvoice, validateWaybill } from './validations';
 import InvoiceService from './InvoiceService';
-import { getOneInvoice, getOneWaybill } from './invoiceRepository';
+import { getInvoiceItems, getOneInvoice, getOneWaybill } from './invoiceRepository';
 
 /**
  *
@@ -24,7 +24,7 @@ class InvoiceController {
 
     try {
       const invoice = await InvoiceService.createInvoiceService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -60,6 +60,28 @@ class InvoiceController {
   }
 
   /**
+   * get invoice items
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice items data
+   */
+  static async getInvoiceItems(req, res, next) {
+    try {
+      const items = await getInvoiceItems(req.body.ivid);
+
+      return res.status(200).json({
+        message: 'Success',
+        data: items,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
    * update invoice data
    *
    * @static
@@ -73,7 +95,36 @@ class InvoiceController {
     if (!ivid) return res.status(400).json('Invoice id required');
 
     try {
-      const invoice = await InvoiceService.updateInvoiceService(req.body);
+      const invoice = await InvoiceService.updateInvoiceService(
+        Object.assign(req.body, { staff: req.user })
+      );
+
+      return res.status(200).json({
+        message: 'Data updated successfully',
+        data: invoice,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * update invoice data
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice data
+   */
+  static async dispenseItem(req, res, next) {
+    const { inv_id } = req.body;
+    if (!inv_id) return res.status(400).json('Invoice id required');
+
+    try {
+      const invoice = await InvoiceService.dispenseItemService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Data updated successfully',
@@ -98,7 +149,9 @@ class InvoiceController {
     if (!ivid) return res.status(400).json('Invoice id required');
 
     try {
-      const invoice = await InvoiceService.deleteInvoiceService(req.body);
+      const invoice = await InvoiceService.deleteInvoiceService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Invoice deleted successfully',
@@ -145,7 +198,9 @@ class InvoiceController {
     if (!invoice_id) return res.status(400).json('Invoice id is required');
 
     try {
-      const invoice = await InvoiceService.approveInvoiceService(req.body);
+      const invoice = await InvoiceService.approveInvoiceService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'invoice approved successfully',
@@ -170,7 +225,9 @@ class InvoiceController {
     if (!invoice_id && !comment) return res.status(400).json('Invoice id and comment are required');
 
     try {
-      const invoice = await InvoiceService.declineInvoiceService(req.body);
+      const invoice = await InvoiceService.declineInvoiceService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'invoice declined!',
@@ -182,7 +239,7 @@ class InvoiceController {
   }
 
   /**
-   * decline invoice
+   * step down invoice
    *
    * @static
    * @param {object} req express request object
@@ -195,7 +252,9 @@ class InvoiceController {
     if (!invoice_id) return res.status(400).json('Invoice id required');
 
     try {
-      const invoice = await InvoiceService.stepDownInvoiceService(req.body);
+      const invoice = await InvoiceService.stepDownInvoiceService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'invoice stepped down!',
@@ -221,7 +280,7 @@ class InvoiceController {
 
     try {
       const waybill = await InvoiceService.createWaybillService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -292,7 +351,9 @@ class InvoiceController {
     if (!wyid) return res.status(400).json('Invoice id required');
 
     try {
-      const waybill = await InvoiceService.updateWaybillService(req.body);
+      const waybill = await InvoiceService.updateWaybillService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Data updated successfully',

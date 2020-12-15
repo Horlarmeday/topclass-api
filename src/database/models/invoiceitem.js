@@ -14,6 +14,18 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      label: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      status: {
+        type: DataTypes.ENUM('Pending', 'Dispensed'),
+        allowNull: false,
+        defaultValue: 'Pending',
+      },
       item_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       item_type: DataTypes.STRING,
+      label: DataTypes.STRING,
       type: {
         type: DataTypes.STRING,
         allowNull: false,

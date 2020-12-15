@@ -1,0 +1,1 @@
+const { AuditLog } = require('../../database/models');

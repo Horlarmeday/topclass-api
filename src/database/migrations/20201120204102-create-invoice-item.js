@@ -10,8 +10,15 @@ module.exports = {
       item: {
         type: Sequelize.TEXT,
       },
+      label: {
+        type: Sequelize.STRING,
+      },
       item_id: {
         type: Sequelize.INTEGER,
+      },
+      status: {
+        type: Sequelize.ENUM('Pending', 'Dispensed'),
+        defaultValue: 'Pending',
       },
       quantity: {
         type: Sequelize.INTEGER,

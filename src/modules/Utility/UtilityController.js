@@ -22,7 +22,7 @@ class UtilityController {
 
     try {
       const label = await UtilityService.createLabelService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -48,7 +48,9 @@ class UtilityController {
     if (!lid) return res.status(400).json('Label id required');
 
     try {
-      const label = await UtilityService.deleteLabelService(req.body);
+      const label = await UtilityService.deleteLabelService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Label deleted successfully',
@@ -96,7 +98,7 @@ class UtilityController {
 
     try {
       const unit = await UtilityService.createUnitService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -122,7 +124,9 @@ class UtilityController {
     if (!uid) return res.status(400).json('Unit id required');
 
     try {
-      const unit = await UtilityService.deleteUnitService(req.body);
+      const unit = await UtilityService.deleteUnitService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Unit deleted successfully',
@@ -170,7 +174,7 @@ class UtilityController {
 
     try {
       const item = await UtilityService.createDefaultItemService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -218,7 +222,9 @@ class UtilityController {
     if (!did) return res.status(400).json('item id required');
 
     try {
-      const item = await UtilityService.deleteDefaultItemService(req.body);
+      const item = await UtilityService.deleteDefaultItemService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Item deleted successfully',
@@ -244,7 +250,7 @@ class UtilityController {
 
     try {
       const setting = await UtilityService.createSettingService(
-        Object.assign(req.body, { sid: req.user.sub })
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({
@@ -292,7 +298,9 @@ class UtilityController {
     if (!stid) return res.status(400).json('setting id required');
 
     try {
-      const setting = await UtilityService.updateSettingService(req.body);
+      const setting = await UtilityService.updateSettingService(
+        Object.assign(req.body, { staff: req.user })
+      );
 
       return res.status(200).json({
         message: 'Changes saved!',
