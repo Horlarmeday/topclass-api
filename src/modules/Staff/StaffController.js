@@ -11,7 +11,6 @@ import _ from 'lodash';
 import { validateForgotPassword, validateStaff, validateStaffLogin } from './validations';
 import StaffService from './StaffService';
 import { getStaffById } from './staffRepository';
-
 /**
  *
  *

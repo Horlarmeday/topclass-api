@@ -1,5 +1,8 @@
 export default {
-  Admin: 'Admin',
-  SuperAdmin: 'SuperAdmin',
-  User: 'User',
+  ADMIN: 'Admin',
+  SUPERADMIN: 'SuperAdmin',
+  STORE: 'Store',
+  WORKSHOP: 'Workshop',
+  SECRETARY: 'Secretary',
+  ACCOUNTANT: 'Accountant',
 };

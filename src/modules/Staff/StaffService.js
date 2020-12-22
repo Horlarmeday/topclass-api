@@ -125,7 +125,7 @@ class StaffService {
     const isSamePassword = await bcrypt.compare(oldPassword, staff.password);
     if (!isSamePassword) throw new Error('Old password not correct');
 
-    const salt = await bcrypt.genSalt(16);
+    const salt = await bcrypt.genSalt(12);
     staff.password = await bcrypt.hash(newPassword, salt);
     await staff.save();
 

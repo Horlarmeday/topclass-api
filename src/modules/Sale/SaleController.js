@@ -1,7 +1,6 @@
 import { creditors, getOnePayment, getOneSale, staffCreditors } from './saleRepository';
 import SaleService from './SaleService';
 import { validatePayment } from './validations';
-import ProductService from '../Product/ProductService';
 
 /**
  *

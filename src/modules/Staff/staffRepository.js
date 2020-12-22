@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import _ from 'lodash';
 
 const { Staff } = require('../../database/models');
 
@@ -59,6 +60,39 @@ export async function findStaffByPhone(data) {
  */
 export async function getStaffById(data) {
   return Staff.findByPk(data);
+}
+
+/**
+ * query staff account role
+ *
+ * @function
+ * @returns {json} json object with staff data
+ * @param firstRole
+ * @param secondRole
+ */
+export async function getStaffByTwoRole(firstRole, secondRole) {
+  const staffs = await Staff.findAll({
+    where: { [Op.or]: [{ role: firstRole }, { role: secondRole }] },
+    attributes: ['sid'],
+  });
+
+  return _.map(staffs, staff => staff.sid);
+}
+
+/**
+ * query staff account role
+ *
+ * @function
+ * @returns {json} json object with staff data
+ * @param role
+ */
+export async function getStaffByOneRole(role) {
+  const staffs = await Staff.findAll({
+    where: { role },
+    attributes: ['sid'],
+  });
+
+  return _.map(staffs, staff => staff.sid);
 }
 
 /**

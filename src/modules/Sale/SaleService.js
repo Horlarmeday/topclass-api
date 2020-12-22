@@ -4,7 +4,6 @@ import {
   filterSales,
   searchSales,
   createPayment,
-  getSaleById,
   generateReceipt,
   getStaffSales,
   applyDiscount,
@@ -13,7 +12,10 @@ import {
   getOneSale,
 } from './saleRepository';
 import { startOfTheYear } from '../../helpers/helper';
-import { auditLog } from '../../command/schedule';
+import { auditLog, groupSystemNotification } from '../../command/schedule';
+import Constant from '../../helpers/constants';
+import { getStaffByTwoRole } from '../Staff/staffRepository';
+import Roles from '../../helpers/roles';
 
 class SaleService {
   /**
@@ -92,7 +94,9 @@ class SaleService {
    */
   static async createPaymentService(body) {
     const payment = await createPayment(body);
-    const sale = await getSaleById(body.slid);
+    const sale = await getOneSale(body.slid);
+    const staffs = await getStaffByTwoRole(Roles.WORKSHOP, Roles.STORE);
+
     let updatedSale;
 
     if (Number(body.amount) < Number(sale.amount_remaining)) {
@@ -122,6 +126,16 @@ class SaleService {
       await auditLog(content, body.sid);
       await generateReceipt(payment);
     }
+
+    const notification = `Payment of ₦${payment.amount} has been made for ${sale.Invoice.name}`;
+    await groupSystemNotification({
+      content: notification,
+      staff: staffs,
+      title: 'Payment Added',
+      type: Constant.GROUP,
+      category: Constant.APPROVED,
+    });
+
     // Audit Log
     const content = `${body.fullname} added a payment of ₦${payment.amount}`;
     await auditLog(content, body.sid);

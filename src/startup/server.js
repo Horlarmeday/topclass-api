@@ -23,14 +23,15 @@ import agenda from '../command/agenda';
 import './logger';
 
 const server = express();
-server.disable('X-powered-by');
-const apiTimeout = 18000;
+// const app = require('http').Server(server);
 
+const apiTimeout = 18000;
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
 
+server.disable('X-powered-by');
 server.use(cors());
 server.use(helmet());
 server.use(limiter);
