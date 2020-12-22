@@ -49,10 +49,6 @@ export async function getRevenue(start, end) {
     ],
     raw: true,
   });
-
-  return {
-    revenue,
-  };
 }
 
 /**
