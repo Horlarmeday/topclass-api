@@ -25,10 +25,15 @@ module.exports = (sequelize, DataTypes) => {
       tableName: 'dispense_histories',
     }
   );
-  DispenseHistory.associate = ({ Staff }) => {
+  DispenseHistory.associate = ({ Staff, Product }) => {
     // associations can be defined here
     DispenseHistory.belongsTo(Staff, {
       foreignKey: 'sid',
+    });
+
+    DispenseHistory.belongsTo(Product, {
+      foreignKey: 'item_id',
+      as: 'products',
     });
   };
   sequelizePaginate.paginate(DispenseHistory);

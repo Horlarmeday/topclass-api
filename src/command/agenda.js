@@ -1,4 +1,9 @@
-import { createLog } from '../modules/Notification/notificationRepository';
+import {
+  createGroupNotification,
+  createLog,
+  createNotification,
+} from '../modules/Notification/notificationRepository';
+import Constant from '../helpers/constants';
 
 const Agenda = require('agenda');
 
@@ -14,9 +19,17 @@ agenda
   .on('ready', () => console.log('Agenda started!'))
   .on('error', () => console.log('Agenda connection error!'));
 
-agenda.define('audit_log', async job => {
+agenda.define(Constant.AUDIT_LOG, async job => {
   const { content, staff } = job.attrs.data;
   await createLog(content, staff);
+});
+
+agenda.define(Constant.NOTIFICATION, async job => {
+  await createNotification(job.attrs.data);
+});
+
+agenda.define(Constant.GROUP_NOTIFICATION, async job => {
+  await createGroupNotification(job.attrs.data);
 });
 
 agenda.start().then(r => console.log(r));

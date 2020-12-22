@@ -36,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      is_dispensed: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       cid: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -53,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Invoice.associate = ({ Staff, Customer, InvoiceItem }) => {
+  Invoice.associate = ({ Staff, Customer, InvoiceItem, Payment }) => {
     // associations can be defined here
     Invoice.belongsTo(Staff, {
       foreignKey: 'sid',
@@ -64,6 +68,10 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Invoice.hasMany(InvoiceItem, {
+      foreignKey: 'ivid',
+    });
+
+    Invoice.hasMany(Payment, {
       foreignKey: 'ivid',
     });
   };

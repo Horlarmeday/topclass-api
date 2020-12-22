@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { Sequelize } from 'sequelize';
-import SettingInterface from '../../helpers/contants';
+import SettingInterface from '../../helpers/constants';
 import { generateId } from '../../helpers/helper';
 import { getSettingByName } from '../Utility/utilityRepository';
 import { getSaleByInvoiceId } from '../Sale/saleRepository';
@@ -25,7 +25,8 @@ const db = require('../../database/models/index');
  * @returns {json} json object with invoice data
  */
 export async function invoiceCount() {
-  return Invoice.count();
+  const count = await Invoice.count();
+  return count;
 }
 
 /**
@@ -120,6 +121,19 @@ export async function getInvoiceItems(data) {
 }
 
 /**
+ * query invoice items in the DB by invoice id
+ *
+ * @function
+ * @returns {json} json object with invoice items data
+ * @param data
+ */
+export async function getPendingItemsCount(data) {
+  return InvoiceItem.count({
+    where: { ivid: data, status: 'Pending' },
+  });
+}
+
+/**
  * update invoice
  *
  * @function
@@ -129,6 +143,18 @@ export async function getInvoiceItems(data) {
 export async function updateInvoice(data) {
   const invoice = await getInvoiceById(data.ivid);
   return invoice.update(data);
+}
+
+/**
+ * change invoice to is_dispensed
+ *
+ * @function
+ * @returns {json} json object with invoice data
+ * @param data
+ */
+export async function invoiceDispensed(data) {
+  const invoice = await getInvoiceById(data);
+  return invoice.update({ is_dispensed: 1 });
 }
 
 /**
@@ -248,6 +274,31 @@ export async function steppedDownInvoices(currentPage = 1, pageLimit = 10, filte
       [Op.or]: [
         {
           has_step_down: filter,
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * filter invoices
+ *
+ * @function
+ * @returns {json} json object with invoices data
+ * @param currentPage
+ * @param pageLimit
+ * @param filter
+ */
+export async function unDispensedInvoices(currentPage = 1, pageLimit = 10, filter) {
+  return Invoice.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }],
+    where: {
+      [Op.or]: [
+        {
+          is_dispensed: filter,
         },
       ],
     },
