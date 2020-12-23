@@ -3,7 +3,7 @@ import StaffController from './StaffController';
 import verify from '../../middleware/verify';
 
 const router = Router();
-router.post('/create', StaffController.createStaff);
+router.post('/create', verify, StaffController.createStaff);
 router.post('/login', StaffController.loginStaff);
 router.post('/forgot-password', StaffController.forgotPassword);
 router.post('/change-password', verify, StaffController.changePassword);

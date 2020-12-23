@@ -6,6 +6,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import rateLimit from 'express-rate-limit';
 import Agendash from 'agendash2';
+import morgan from 'morgan';
 
 import error from '../middleware/error';
 import staffRoutes from '../modules/Staff/staffRoutes';
@@ -23,16 +24,23 @@ import agenda from '../command/agenda';
 import './logger';
 
 const server = express();
-server.disable('X-powered-by');
-const apiTimeout = 18000;
 
+const apiTimeout = 18000;
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
 
-server.use(cors());
+const corsOptions = {
+  credentials: true,
+  origin: [],
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+server.disable('X-powered-by');
+server.use(cors(corsOptions));
 server.use(helmet());
+server.use(morgan('dev'));
 server.use(limiter);
 server.use(express.json({ limit: '5mb' }));
 server.use(express.static('download'));

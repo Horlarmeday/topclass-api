@@ -60,6 +60,19 @@ export async function superAdminCard() {
   };
 }
 
+export async function revenueAnalyticsData() {
+  return Payment.findAll({
+    order: [['createdAt', 'DESC']],
+    group: [Sequelize.fn('MONTH', Sequelize.col('createdAt'))],
+    attributes: [
+      [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'month'],
+      [Sequelize.fn('SUM', Sequelize.col('amount')), 'total'],
+      [Sequelize.fn('COUNT', 'id'), 'revenueCount'],
+    ],
+    raw: true,
+  });
+}
+
 /**
  * admin estimated card figures
  *

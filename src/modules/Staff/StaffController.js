@@ -11,7 +11,6 @@ import _ from 'lodash';
 import { validateForgotPassword, validateStaff, validateStaffLogin } from './validations';
 import StaffService from './StaffService';
 import { getStaffById } from './staffRepository';
-
 /**
  *
  *
@@ -31,9 +30,11 @@ class StaffController {
     const { error } = validateStaff(req.body);
     if (error) return res.status(400).json(error.details[0].message);
 
+    console.log(req.user)
+
     try {
       const staff = await StaffService.createUserService(
-        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
+        Object.assign(req.body, { staff_id: req.user.sub, fullname: req.user.fullname })
       );
 
       return res.status(201).json({

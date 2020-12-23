@@ -27,6 +27,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
+      is_dispensed: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       cid: {
         type: Sequelize.INTEGER,
       },

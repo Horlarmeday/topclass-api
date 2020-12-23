@@ -1,4 +1,6 @@
 import { port } from './config/secret';
-import server from './startup/server';
+import { app } from './startup/io';
 
-server.listen(port, () => console.log(`Running on port ${port}...`));
+import './socket/socket';
+
+app.listen(port, () => console.log(`Running on port ${port}...`));

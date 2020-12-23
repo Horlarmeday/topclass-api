@@ -45,9 +45,32 @@ class InvoiceController {
    * @param {object} next next middleware
    * @returns {json} json object with invoice data
    */
-  static async getOneInvoice(req, res, next) {
+  static async getInvoiceParams(req, res, next) {
     try {
       const invoice = await getOneInvoice(req.params.id);
+      if (!invoice) return res.status(404).json('Invoice not found');
+
+      return res.status(200).json({
+        message: 'Success',
+        data: invoice,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get one invoice
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice data
+   */
+  static async getOneInvoice(req, res, next) {
+    try {
+      const invoice = await getOneInvoice(req.body.id);
       if (!invoice) return res.status(404).json('Invoice not found');
 
       return res.status(200).json({
@@ -127,7 +150,7 @@ class InvoiceController {
       );
 
       return res.status(200).json({
-        message: 'Data updated successfully',
+        message: 'Item dispensed successfully',
         data: invoice,
       });
     } catch (e) {

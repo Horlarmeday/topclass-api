@@ -98,6 +98,28 @@ export async function getSales(currentPage = 1, pageLimit = 10) {
 }
 
 /**
+ * get sales
+ *
+ * @function
+ * @returns {json} json object with sales data
+ * @param currentPage
+ * @param pageLimit
+ */
+export async function getPendingSales(currentPage = 1, pageLimit = 10) {
+  return Sale.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }, { model: Invoice }],
+    where: {
+      status: {
+        [Op.not]: 'Paid',
+      },
+    },
+  });
+}
+
+/**
  * filter sales
  *
  * @function

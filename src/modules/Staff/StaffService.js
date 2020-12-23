@@ -30,7 +30,7 @@ class StaffService {
     const user = await createUser(body);
     // Audit Log
     const content = `${body.fullname} created ${user.fullname} staff account`;
-    await auditLog(content, body.sid);
+    await auditLog(content, body.staff_id);
 
     return user;
   }
@@ -125,7 +125,7 @@ class StaffService {
     const isSamePassword = await bcrypt.compare(oldPassword, staff.password);
     if (!isSamePassword) throw new Error('Old password not correct');
 
-    const salt = await bcrypt.genSalt(16);
+    const salt = await bcrypt.genSalt(12);
     staff.password = await bcrypt.hash(newPassword, salt);
     await staff.save();
 

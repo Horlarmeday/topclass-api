@@ -14,13 +14,19 @@ import {
   updateWaybill,
   steppedDownInvoices,
   dispenseItem,
-  getItemById, createDispenseHistory,
+  getItemById,
+  createDispenseHistory,
+  getPendingItemsCount,
+  invoiceDispensed,
+  unDispensedInvoices, approvedNotSteppedDownInvoices, getInvoiceByDate,
 } from './invoiceRepository';
 import { getSettingByName } from '../Utility/utilityRepository';
+import Constant from '../../helpers/constants';
+import Role from '../../helpers/roles';
 
-import SettingInterface from '../../helpers/contants';
-import { auditLog } from '../../command/schedule';
-import { getProductById, updateProduct, updateProductQuantity } from '../Product/productRepository';
+import { auditLog, groupSystemNotification, systemNotification } from '../../command/schedule';
+import { getProductById, updateProductQuantity } from '../Product/productRepository';
+import { getStaffByOneRole } from '../Staff/staffRepository';
 
 class InvoiceService {
   /**
@@ -33,17 +39,33 @@ class InvoiceService {
    */
   static async createInvoiceService(body) {
     const content = `${body.fullname} created an ${body.name} invoice`;
+    const notification = `${body.fullname} needs approval for ${body.invoice_type} created`;
+    const staff = getStaffByOneRole(Role.SUPERADMIN);
+
     if (body.should_include_vat) {
-      const vat = await getSettingByName(SettingInterface.VAT);
+      const vat = await getSettingByName(Constant.VAT);
       const total = body.product.map(cost => Number(cost.price)).reduce((a, b) => a + b, 0);
       const vatPrice = (Number(vat.value) / 100) * total;
 
       const createdInvoice = await createInvoice(body, vatPrice);
 
+      await groupSystemNotification({
+        content: notification,
+        staff,
+        title: 'Invoice Approval Needed',
+        type: Constant.GROUP,
+        category: Constant.NEW_NOTIFICATION,
+      });
       await auditLog(content, body.sid);
       return createdInvoice;
     }
 
+    await groupSystemNotification({
+      content: notification,
+      staff,
+      title: 'Invoice Approval Needed',
+      type: Constant.GROUP,
+    });
     await auditLog(content, body.sid);
     return createInvoice(body);
   }
@@ -83,15 +105,40 @@ class InvoiceService {
     const leftOver = product.quantity - item.quantity;
     const updatedItem = await dispenseItem(item);
 
-    // update product quantity and dispense history
-    await updateProductQuantity(product, leftOver);
-    await createDispenseHistory(item, leftOver, body.staff.sub);
+    this.changeInvoiceToDispensed(updatedItem);
+
+    this.dispenseItem(product, item, body.staff.sub, leftOver);
 
     // Audit Log
     const content = `${body.staff.fullname} dispensed ${updatedItem.item}`;
     await auditLog(content, body.staff.sub);
 
     return updatedItem;
+  }
+
+  /**
+   *
+   * @param item
+   * @returns {Promise<void>}
+   */
+  static async changeInvoiceToDispensed(item) {
+    // get pending items and change invoice to is_dispensed
+    const items = await getPendingItemsCount(item.ivid);
+    if (items === 0) invoiceDispensed(item.ivid);
+  }
+
+  /**
+   *
+   * @param product
+   * @param item
+   * @param staff
+   * @param leftOver
+   * @returns {Promise<void>}
+   */
+  static async dispenseItem(product, item, staff, leftOver) {
+    // update product quantity and dispense history
+    await updateProductQuantity(product, leftOver);
+    await createDispenseHistory(item, leftOver, staff);
   }
 
   /**
@@ -120,7 +167,7 @@ class InvoiceService {
    * @memberOf InvoiceService
    */
   static async getInvoices(body) {
-    const { currentPage, pageLimit, search, filter, stepdown } = body;
+    const { currentPage, pageLimit, search, filter, stepdown, dispense, start, end } = body;
     if (search) {
       return searchInvoices(Number(currentPage), Number(pageLimit), search);
     }
@@ -129,8 +176,16 @@ class InvoiceService {
       return filterInvoices(Number(currentPage), Number(pageLimit), filter);
     }
 
+    if (start && end) {
+      return getInvoiceByDate(Number(currentPage), Number(pageLimit), start, end);
+    }
+
     if (stepdown) {
-      return steppedDownInvoices(Number(currentPage), Number(pageLimit), stepdown);
+      return approvedNotSteppedDownInvoices(Number(currentPage), Number(pageLimit), stepdown);
+    }
+
+    if (dispense) {
+      return unDispensedInvoices(Number(currentPage), Number(pageLimit), dispense);
     }
 
     if (Object.values(body).length) {
@@ -150,6 +205,16 @@ class InvoiceService {
    */
   static async approveInvoiceService(body) {
     const approvedInvoice = await approveInvoice(body);
+    const staff = await getStaffByOneRole(Role.ACCOUNTANT);
+    const notification = `${approvedInvoice.name} invoice has been approved`;
+
+    await groupSystemNotification({
+      content: notification,
+      staff: [...staff, approvedInvoice.sid],
+      title: 'Invoice Approved',
+      type: Constant.GROUP,
+      category: Constant.APPROVED,
+    });
     // Audit Log
     const content = `${body.staff.fullname} approved ${approvedInvoice.name} invoice`;
     await auditLog(content, body.staff.sub);
@@ -167,6 +232,15 @@ class InvoiceService {
    */
   static async declineInvoiceService(body) {
     const declinedInvoice = await declineInvoice(body);
+    const notification = `${declinedInvoice.name} invoice has been declined: Reason - $${declinedInvoice.comment}`;
+
+    await systemNotification({
+      content: notification,
+      staff: declinedInvoice.sid,
+      title: 'Invoice Declined',
+      type: Constant.INDIVIDUAL,
+      category: Constant.DECLINED,
+    });
     // Audit Log
     const content = `${body.staff.fullname} declined ${declinedInvoice.name} invoice`;
     await auditLog(content, body.staff.sub);

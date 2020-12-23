@@ -6,6 +6,7 @@ const router = Router();
 router.post('/create', verify, InvoiceController.createInvoice);
 router.post('/waybill/create', verify, InvoiceController.createWaybill);
 router.post('/items', verify, InvoiceController.getInvoiceItems);
+router.post('/getById', verify, InvoiceController.getOneInvoice);
 router.put('/', verify, InvoiceController.updateInvoice);
 router.put('/approve', verify, InvoiceController.approveInvoice);
 router.put('/decline', verify, InvoiceController.declineInvoice);
@@ -15,7 +16,7 @@ router.put('/dispense', verify, InvoiceController.dispenseItem);
 router.get('/', verify, InvoiceController.getInvoices);
 router.get('/waybill', verify, InvoiceController.getWaybills);
 router.get('/waybill/:id', verify, InvoiceController.getOneWaybill);
-router.get('/:id', verify, InvoiceController.getOneInvoice);
+router.get('/:id', verify, InvoiceController.getInvoiceParams);
 router.delete('/', verify, InvoiceController.deleteInvoice);
 
 export default router;
