@@ -4,7 +4,8 @@ import {
   secretaryCard,
   adminCard,
   storeKeeperCard,
-  workshopCard, revenueAnalyticsData,
+  workshopCard,
+  revenueAnalyticsData,
 } from './dashboardRepository';
 
 /**

@@ -228,6 +228,31 @@ export async function getInvoices(currentPage = 1, pageLimit = 10) {
 }
 
 /**
+ * get invoices by date
+ *
+ * @function
+ * @returns {json} json object with invoices data
+ * @param currentPage
+ * @param pageLimit
+ * @param start
+ * @param end
+ */
+export async function getInvoiceByDate(currentPage = 1, pageLimit = 10, start, end) {
+  return Invoice.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Customer }],
+    where: {
+      createdAt: {
+        [Op.gte]: new Date(new Date(start).setHours(0, 0, 0)),
+        [Op.lt]: new Date(new Date(end).setHours(23, 59, 59)),
+      },
+    },
+  });
+}
+
+/**
  * filter invoices
  *
  * @function
@@ -264,16 +289,19 @@ export async function filterInvoices(currentPage = 1, pageLimit = 10, filter) {
  * @param pageLimit
  * @param filter
  */
-export async function steppedDownInvoices(currentPage = 1, pageLimit = 10, filter) {
+export async function approvedNotSteppedDownInvoices(currentPage = 1, pageLimit = 10, filter) {
   return Invoice.paginate({
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
     include: [{ model: Customer }],
     where: {
-      [Op.or]: [
+      [Op.and]: [
         {
           has_step_down: filter,
+        },
+        {
+          is_approved: 1,
         },
       ],
     },

@@ -18,7 +18,7 @@ import {
   createDispenseHistory,
   getPendingItemsCount,
   invoiceDispensed,
-  unDispensedInvoices,
+  unDispensedInvoices, approvedNotSteppedDownInvoices, getInvoiceByDate,
 } from './invoiceRepository';
 import { getSettingByName } from '../Utility/utilityRepository';
 import Constant from '../../helpers/constants';
@@ -167,7 +167,7 @@ class InvoiceService {
    * @memberOf InvoiceService
    */
   static async getInvoices(body) {
-    const { currentPage, pageLimit, search, filter, stepdown, dispense } = body;
+    const { currentPage, pageLimit, search, filter, stepdown, dispense, start, end } = body;
     if (search) {
       return searchInvoices(Number(currentPage), Number(pageLimit), search);
     }
@@ -176,8 +176,12 @@ class InvoiceService {
       return filterInvoices(Number(currentPage), Number(pageLimit), filter);
     }
 
+    if (start && end) {
+      return getInvoiceByDate(Number(currentPage), Number(pageLimit), start, end);
+    }
+
     if (stepdown) {
-      return steppedDownInvoices(Number(currentPage), Number(pageLimit), stepdown);
+      return approvedNotSteppedDownInvoices(Number(currentPage), Number(pageLimit), stepdown);
     }
 
     if (dispense) {

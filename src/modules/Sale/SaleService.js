@@ -9,7 +9,7 @@ import {
   applyDiscount,
   searchPayments,
   getPayments,
-  getOneSale,
+  getOneSale, getPendingSales,
 } from './saleRepository';
 import { startOfTheYear } from '../../helpers/helper';
 import { auditLog, groupSystemNotification } from '../../command/schedule';
@@ -64,13 +64,17 @@ class SaleService {
    * @memberOf SaleService
    */
   static async getSalesService(body) {
-    const { currentPage, pageLimit, search, filter, data } = body;
+    const { currentPage, pageLimit, search, filter, data, pending } = body;
     if (search) {
       return searchSales(Number(currentPage), Number(pageLimit), search);
     }
 
     if (filter) {
       return filterSales(Number(currentPage), Number(pageLimit), filter);
+    }
+
+    if (pending) {
+      return getPendingSales(Number(currentPage), Number(pageLimit));
     }
 
     if (data) {
