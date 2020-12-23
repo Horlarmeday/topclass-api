@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Sequelize } from 'sequelize';
 import _ from 'lodash';
 
@@ -13,7 +14,28 @@ const { Op } = Sequelize;
  * @param data
  */
 export async function createUser(data) {
-  return Staff.create(data);
+  const {
+    fullname,
+    email,
+    phone,
+    password,
+    role,
+    username,
+    gender,
+    guarantor_name,
+    guarantor_phone,
+  } = data;
+  return Staff.create({
+    fullname,
+    email,
+    phone,
+    password,
+    role,
+    username,
+    gender,
+    guarantor_name,
+    guarantor_phone,
+  });
 }
 
 /**

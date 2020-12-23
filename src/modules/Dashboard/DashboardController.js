@@ -4,7 +4,7 @@ import {
   secretaryCard,
   adminCard,
   storeKeeperCard,
-  workshopCard,
+  workshopCard, revenueAnalyticsData,
 } from './dashboardRepository';
 
 /**
@@ -54,6 +54,28 @@ class DashboardController {
   static async superAdminCardData(req, res, next) {
     try {
       const data = await superAdminCard();
+
+      return res.status(200).json({
+        message: 'Success',
+        data,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get header cards figures
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with card data
+   */
+  static async revenueAnalyticsData(req, res, next) {
+    try {
+      const data = await revenueAnalyticsData();
 
       return res.status(200).json({
         message: 'Success',

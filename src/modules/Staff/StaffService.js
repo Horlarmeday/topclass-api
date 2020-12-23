@@ -30,7 +30,7 @@ class StaffService {
     const user = await createUser(body);
     // Audit Log
     const content = `${body.fullname} created ${user.fullname} staff account`;
-    await auditLog(content, body.sid);
+    await auditLog(content, body.staff_id);
 
     return user;
   }

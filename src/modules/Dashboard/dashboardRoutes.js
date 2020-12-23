@@ -5,6 +5,7 @@ import verify from '../../middleware/verify';
 const router = Router();
 router.get('/accountant', verify, DashboardController.accountantCardData);
 router.get('/superadmin', verify, DashboardController.superAdminCardData);
+router.get('/revenue-analytics-data', verify, DashboardController.revenueAnalyticsData);
 router.get('/secretary', verify, DashboardController.secretaryCardData);
 router.get('/store-keeper', verify, DashboardController.storeKeeperCardData);
 router.get('/workshop', verify, DashboardController.workshopCardData);
