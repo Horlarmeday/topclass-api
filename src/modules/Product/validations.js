@@ -8,8 +8,10 @@ export function validateProduct(product) {
       .optional()
       .allow(''),
     quantity: Joi.number().required(),
-    cost: Joi.number().required(),
-    selling_price: Joi.number().required(),
+    cost: Joi.number().optional()
+    .allow(''),
+    selling_price: Joi.number().optional()
+    .allow(''),
     unit: Joi.string().required(),
     label: Joi.string().required(),
     comment: Joi.string()

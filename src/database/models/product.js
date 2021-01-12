@@ -26,17 +26,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       cost: {
         type: DataTypes.DECIMAL,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
       },
       selling_price: {
         type: DataTypes.DECIMAL,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
       },
       comment: DataTypes.STRING,
       unit: {
