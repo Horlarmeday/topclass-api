@@ -49,7 +49,7 @@ server.use(
     limits: { fileSize: 7 * 1024 * 1024 },
   })
 );
-server.use('/static', express.static(path.join(__dirname, '../public')));
+// server.use('/static', express.static(path.join(__dirname, '../public')));
 server.use('/dash', Agendash(agenda));
 server.use('/api/staffs', staffRoutes);
 server.use('/api/customers', customerRoutes);

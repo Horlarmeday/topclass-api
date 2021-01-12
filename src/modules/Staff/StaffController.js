@@ -34,7 +34,7 @@ class StaffController {
 
     try {
       const staff = await StaffService.createUserService(
-        Object.assign(req.body, { staff_id: req.user.sub, fullname: req.user.fullname })
+        Object.assign(req.body, { staff_id: req.user.sub, name: req.user.fullname })
       );
 
       return res.status(201).json({
