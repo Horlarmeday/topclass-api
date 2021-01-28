@@ -7,7 +7,7 @@
  * - updateProduct - allow products to update
  */
 import { validateProduct } from './validations';
-import { getProductById } from './productRepository';
+import { getOneProduct, getProductById } from './productRepository';
 import ProductService from './ProductService';
 
 /**
@@ -54,7 +54,7 @@ class ProductController {
    */
   static async getOneProduct(req, res, next) {
     try {
-      const product = await getProductById(req.params.id);
+      const product = await getOneProduct(req.params.id);
       if (!product) return res.status(404).json('Product not found');
 
       return res.status(200).json({
@@ -86,6 +86,33 @@ class ProductController {
 
       return res.status(200).json({
         message: 'Data updated successfully',
+        data: product,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * return product
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with product data
+   */
+  static async returnProduct(req, res, next) {
+    const { pid } = req.body;
+    if (!pid) return res.status(400).json('Product id required');
+
+    try {
+      const product = await ProductService.returnProductService(
+        Object.assign(req.body, { staff: req.user })
+      );
+
+      return res.status(200).json({
+        message: 'Product returned successfully',
         data: product,
       });
     } catch (e) {

@@ -1,9 +1,12 @@
 import {
   createProduct,
   filterProducts,
+  getProductById,
   getProducts,
+  returnProduct,
   searchProducts,
   updateProduct,
+  updateProductQuantity,
 } from './productRepository';
 import { auditLog } from '../../command/schedule';
 
@@ -38,6 +41,29 @@ class ProductService {
     // Audit Log
     const content = `${body.staff.fullname} updated ${product.name}`;
     await auditLog(content, body.staff.sub);
+
+    return product;
+  }
+
+  /**
+   * return product account
+   *
+   * @static
+   * @returns {json} json object with staff data
+   * @param body
+   * @memberOf ProductService
+   */
+  static async returnProductService(body) {
+    const { pid, quantity, staff, reason } = body;
+    const product = await getProductById(pid);
+    // Calculating the inventory quantity + returned quantity
+    const newQuantity = +product.quantity + +quantity;
+
+    await updateProductQuantity(product, newQuantity);
+    await returnProduct({ pid, quantity, newQuantity, staff, reason });
+    // Audit Log
+    const content = `${staff.fullname} returned ${quantity} ${product.name}`;
+    await auditLog(content, staff.sub);
 
     return product;
   }

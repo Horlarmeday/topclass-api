@@ -8,4 +8,6 @@ export default {
   APPROVED: 'Approved',
   DECLINED: 'Declined',
   NEW_NOTIFICATION: 'New',
+  DISPENSE: 'dispense',
+  RETURN: 'return',
 };

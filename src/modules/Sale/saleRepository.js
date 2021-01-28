@@ -157,6 +157,14 @@ export async function getStaffSales(currentPage = 1, pageLimit = 10, data) {
     include: [{ model: Customer }, { model: Invoice }],
     where: {
       sid: data,
+      [Op.or]: [
+        {
+          status: 'Partial',
+        },
+        {
+          status: 'Paid',
+        },
+      ],
     },
   });
 }

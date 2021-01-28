@@ -187,14 +187,16 @@ export async function dispenseItem(item) {
  * @param data
  * @param leftOver
  * @param staff
+ * @param cid - customer id
  */
-export async function createDispenseHistory(data, leftOver, staff) {
+export async function createDispenseHistory(data, leftOver, staff, cid) {
   await DispenseHistory.create({
     name: data.item,
     item_id: data.item_id,
     sid: staff,
     quantity: data.quantity,
     remain_quantity: leftOver,
+    cid,
   });
 }
 

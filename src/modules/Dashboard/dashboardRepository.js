@@ -1,7 +1,15 @@
 /* eslint-disable camelcase */
 import { Sequelize } from 'sequelize';
 
-const { Invoice, Payment, Customer, Asset, Sale, Waybill, DispenseHistory } = require('../../database/models');
+const {
+  Invoice,
+  Payment,
+  Customer,
+  Asset,
+  Sale,
+  Waybill,
+  DispenseHistory,
+} = require('../../database/models');
 
 const { Op } = Sequelize;
 // const db = require('../../database/models/index');

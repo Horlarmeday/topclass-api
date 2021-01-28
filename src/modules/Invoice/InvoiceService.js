@@ -12,13 +12,15 @@ import {
   getWaybills,
   searchWaybill,
   updateWaybill,
-  steppedDownInvoices,
   dispenseItem,
   getItemById,
   createDispenseHistory,
   getPendingItemsCount,
   invoiceDispensed,
-  unDispensedInvoices, approvedNotSteppedDownInvoices, getInvoiceByDate,
+  unDispensedInvoices,
+  approvedNotSteppedDownInvoices,
+  getInvoiceByDate,
+  getInvoiceById,
 } from './invoiceRepository';
 import { getSettingByName } from '../Utility/utilityRepository';
 import Constant from '../../helpers/constants';
@@ -97,6 +99,7 @@ class InvoiceService {
    */
   static async dispenseItemService(body) {
     const item = await getItemById(body);
+
     const product = await getProductById(item.item_id);
     if (!product) throw new Error('Product not found in the inventory');
 
@@ -106,8 +109,9 @@ class InvoiceService {
     const updatedItem = await dispenseItem(item);
 
     this.changeInvoiceToDispensed(updatedItem);
+    const { cid } = await getInvoiceById(item.ivid);
 
-    this.dispenseItem(product, item, body.staff.sub, leftOver);
+    this.createDispenseHistory({ product, item, staff: body.staff.sub, leftOver, cid });
 
     // Audit Log
     const content = `${body.staff.fullname} dispensed ${updatedItem.item}`;
@@ -124,7 +128,7 @@ class InvoiceService {
   static async changeInvoiceToDispensed(item) {
     // get pending items and change invoice to is_dispensed
     const items = await getPendingItemsCount(item.ivid);
-    if (items === 0) invoiceDispensed(item.ivid);
+    if (items === 0) await invoiceDispensed(item.ivid);
   }
 
   /**
@@ -133,12 +137,13 @@ class InvoiceService {
    * @param item
    * @param staff
    * @param leftOver
+   * @param cid - customer id
    * @returns {Promise<void>}
    */
-  static async dispenseItem(product, item, staff, leftOver) {
+  static async createDispenseHistory({ product, item, staff, leftOver, cid }) {
     // update product quantity and dispense history
     await updateProductQuantity(product, leftOver);
-    await createDispenseHistory(item, leftOver, staff);
+    await createDispenseHistory(item, leftOver, staff, cid);
   }
 
   /**

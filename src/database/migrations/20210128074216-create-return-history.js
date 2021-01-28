@@ -1,22 +1,16 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Dispense_Histories', {
-      dhid: {
+    return queryInterface.createTable('Return_Histories', {
+      rid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      staff_id: {
+        type: Sequelize.INTEGER,
+      },
       item_id: {
-        type: Sequelize.INTEGER,
-      },
-      name: {
-        type: Sequelize.STRING,
-      },
-      sid: {
-        type: Sequelize.INTEGER,
-      },
-      cid: {
         type: Sequelize.INTEGER,
       },
       quantity: {
@@ -24,6 +18,9 @@ module.exports = {
       },
       remain_quantity: {
         type: Sequelize.INTEGER,
+      },
+      reason: {
+        type: Sequelize.TEXT,
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +33,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Dispense_Histories');
+    return queryInterface.dropTable('Return_Histories');
   },
 };

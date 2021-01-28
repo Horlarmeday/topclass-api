@@ -17,18 +17,23 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      sid: DataTypes.INTEGER,
       quantity: DataTypes.INTEGER,
+      sid: DataTypes.INTEGER,
+      cid: DataTypes.INTEGER,
       remain_quantity: DataTypes.INTEGER,
     },
     {
       tableName: 'dispense_histories',
     }
   );
-  DispenseHistory.associate = ({ Staff, Product }) => {
+  DispenseHistory.associate = ({ Staff, Product, Customer }) => {
     // associations can be defined here
     DispenseHistory.belongsTo(Staff, {
       foreignKey: 'sid',
+    });
+
+    DispenseHistory.belongsTo(Customer, {
+      foreignKey: 'cid',
     });
 
     DispenseHistory.belongsTo(Product, {

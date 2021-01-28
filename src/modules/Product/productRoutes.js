@@ -5,6 +5,7 @@ import verify from '../../middleware/verify';
 const router = Router();
 router.post('/create', verify, ProductController.createProduct);
 router.put('/', verify, ProductController.updateProduct);
+router.put('/return', verify, ProductController.returnProduct);
 router.get('/', verify, ProductController.getProducts);
 router.get('/:id', verify, ProductController.getOneProduct);
 

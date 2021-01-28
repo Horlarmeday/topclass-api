@@ -51,10 +51,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Product.associate = ({ Staff }) => {
+  Product.associate = ({ Staff, ReturnHistory, DispenseHistory }) => {
     // associations can be defined here
     Product.belongsTo(Staff, {
       foreignKey: 'sid',
+    });
+
+    Product.hasMany(ReturnHistory, {
+      foreignKey: 'item_id',
+    });
+
+    Product.hasMany(DispenseHistory, {
+      foreignKey: 'item_id',
     });
   };
 

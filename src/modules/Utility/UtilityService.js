@@ -87,7 +87,7 @@ class UtilityService {
     const unit = await createUnit(body);
     // Audit Log
     const content = `${body.fullname} created a new unit (${unit.name})`;
-    await auditLog(content, body.staff.sub);
+    await auditLog(content, body.sid);
 
     return unit;
   }
