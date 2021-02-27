@@ -33,3 +33,14 @@ export function validateSetting(setting) {
   });
   return schema.validate(setting);
 }
+
+export function validateBank(bank) {
+  const schema = Joi.object({
+    account_name: Joi.string().required(),
+    account_number: Joi.string().required(),
+    bank_name: Joi.string().required(),
+    sort_code: Joi.string().required(),
+    tin_number: Joi.string().required(),
+  });
+  return schema.validate(bank);
+}

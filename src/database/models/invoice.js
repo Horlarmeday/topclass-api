@@ -54,6 +54,30 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      country_of_origin: {
+        type: DataTypes.STRING,
+      },
+      condition_of_sale: {
+        type: DataTypes.TEXT,
+      },
+      terms_of_payment: {
+        type: DataTypes.TEXT,
+      },
+      delivery: {
+        type: DataTypes.TEXT,
+      },
+      validity: {
+        type: DataTypes.TEXT,
+      },
+      installation: {
+        type: DataTypes.TEXT,
+      },
+      bank_id: {
+        type: DataTypes.INTEGER,
+      },
+      place_of_delivery: {
+        type: DataTypes.STRING,
+      },
     },
     {}
   );

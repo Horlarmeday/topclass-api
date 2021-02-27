@@ -1,4 +1,4 @@
-import { validateDefaultItem, validateLabel, validateSetting, validateUnit } from './validations';
+import { validateBank, validateDefaultItem, validateLabel, validateSetting, validateUnit } from './validations';
 import UtilityService from './UtilityService';
 
 /**
@@ -305,6 +305,55 @@ class UtilityController {
       return res.status(200).json({
         message: 'Changes saved!',
         data: setting,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * create bank
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with status, bank data
+   */
+  static async createBank(req, res, next) {
+    const { error } = validateBank(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
+
+    try {
+      const bank = await UtilityService.createBankService(
+        Object.assign(req.body, { sid: req.user.sub, fullname: req.user.fullname })
+      );
+
+      return res.status(201).json({
+        message: 'Successful, data created!',
+        data: bank,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get banks
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with banks data
+   */
+  static async getBanks(req, res, next) {
+    try {
+      const banks = await UtilityService.getBankService(req.query);
+
+      return res.status(200).json({
+        message: 'Data retrieved',
+        data: banks,
       });
     } catch (e) {
       return next(e);

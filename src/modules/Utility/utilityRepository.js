@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Sequelize } from 'sequelize';
 
-const { Label, Unit, Item, Setting } = require('../../database/models');
+const { Label, Unit, Item, Setting, Bank } = require('../../database/models');
 
 const { Op } = Sequelize;
 
@@ -305,6 +305,40 @@ export async function createSetting(data) {
  */
 export async function getSettings(currentPage = 1, pageLimit = 10) {
   return Setting.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+  });
+}
+
+/**
+ * create a bank
+ *
+ * @function
+ * @returns {json} json object with bank data
+ * @param data
+ */
+export async function createBank(data) {
+  const { account_name, bank_name, account_number, sort_code, tin_number } = data;
+  return Bank.create({
+    account_name,
+    bank_name,
+    account_number,
+    sort_code,
+    tin_number,
+  });
+}
+
+/**
+ * get banks
+ *
+ * @function
+ * @returns {json} json object with banks data
+ * @param currentPage
+ * @param pageLimit
+ */
+export async function getBanks(currentPage = 1, pageLimit = 10) {
+  return Bank.paginate({
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],

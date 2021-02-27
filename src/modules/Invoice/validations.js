@@ -10,6 +10,30 @@ export function validateInvoice(invoice) {
     product: Joi.array()
       .items()
       .required(),
+    country_of_origin: Joi.string()
+      .allow('')
+      .optional(),
+    condition_of_sale: Joi.string()
+      .allow('')
+      .optional(),
+    terms_of_payment: Joi.string()
+      .allow('')
+      .optional(),
+    delivery: Joi.string()
+      .allow('')
+      .optional(),
+    validity: Joi.string()
+      .allow('')
+      .optional(),
+    installation: Joi.string()
+      .allow('')
+      .optional(),
+    place_of_delivery: Joi.string()
+      .allow('')
+      .optional(),
+    bank_id: Joi.number()
+      .allow('')
+      .optional(),
     // service: Joi.array().items(
     //   Joi.object({
     //     svid: Joi.number(),

@@ -9,6 +9,7 @@ const {
   InvoiceItem,
   Payment,
   Receipt,
+  Bank,
 } = require('../../database/models');
 
 const { Op } = Sequelize;
@@ -309,7 +310,10 @@ export async function searchPayments(currentPage = 1, pageLimit = 10, search, st
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
-    include: [{ model: Invoice, include: [{ model: Customer }] }],
+    include: [
+      { model: Invoice, include: [{ model: Customer }] },
+      { model: Bank, attributes: ['bank_name'] },
+    ],
     where: {
       createdAt: {
         [Op.gte]: new Date(new Date(start).setHours(0, 0, 0)),
@@ -344,7 +348,10 @@ export async function getPayments(currentPage = 1, pageLimit = 10, start, end) {
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
-    include: [{ model: Invoice, include: [{ model: Customer }] }],
+    include: [
+      { model: Invoice, include: [{ model: Customer }] },
+      { model: Bank, attributes: ['bank_name'] },
+    ],
     where: {
       createdAt: {
         [Op.gte]: new Date(new Date(start).setHours(0, 0, 0)),

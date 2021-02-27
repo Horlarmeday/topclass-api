@@ -16,6 +16,8 @@ import {
   createSetting,
   updateSetting,
   getSettings,
+  createBank,
+  getBanks,
 } from './utilityRepository';
 import { auditLog } from '../../command/schedule';
 
@@ -241,6 +243,41 @@ class UtilityService {
     }
 
     return getSettings();
+  }
+
+  /**
+   * create a bank
+   *
+   * @static
+   * @returns {json} json object with bank data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async createBankService(body) {
+    const bank = await createBank(body);
+    // Audit Log
+    const content = `${body.fullname} created a new bank (${bank.bank_name})`;
+    await auditLog(content, body.sid);
+
+    return bank;
+  }
+
+  /**
+   * get bank
+   *
+   * @static
+   * @returns {json} json object with bank data
+   * @param body
+   * @memberOf UtilityService
+   */
+  static async getBankService(body) {
+    const { currentPage, pageLimit } = body;
+
+    if (Object.values(body).length) {
+      return getBanks(+currentPage, +pageLimit);
+    }
+
+    return getBanks();
   }
 }
 export default UtilityService;

@@ -9,7 +9,8 @@ import {
   applyDiscount,
   searchPayments,
   getPayments,
-  getOneSale, getPendingSales,
+  getOneSale,
+  getPendingSales,
 } from './saleRepository';
 import { startOfTheYear } from '../../helpers/helper';
 import { auditLog, groupSystemNotification } from '../../command/schedule';
@@ -191,7 +192,7 @@ class SaleService {
       return getPayments(Number(currentPage), Number(pageLimit), start, end);
     }
 
-    return getSales();
+    return getPayments();
   }
 }
 export default SaleService;

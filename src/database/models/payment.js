@@ -37,13 +37,13 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      bank: DataTypes.STRING,
+      bank: DataTypes.INTEGER,
       // label: DataTypes.STRING,
       payment_method: DataTypes.STRING,
     },
     {}
   );
-  Payment.associate = ({ Staff, Sale, Invoice }) => {
+  Payment.associate = ({ Staff, Sale, Invoice, Bank }) => {
     // associations can be defined here
     Payment.belongsTo(Staff, {
       foreignKey: 'sid',
@@ -55,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
 
     Payment.belongsTo(Invoice, {
       foreignKey: 'ivid',
+    });
+
+    Payment.belongsTo(Bank, {
+      foreignKey: 'bank',
     });
   };
 

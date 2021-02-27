@@ -1,7 +1,7 @@
 import { verify } from 'jsonwebtoken';
 
 // eslint-disable-next-line consistent-return
-export default function(req, res, next) {
+export default async function(req, res, next) {
   const authHeader = req.headers['x-auth-token'] || req.headers.authorization;
   if (!authHeader) return res.status(401).json('Access denied, No token provided');
 

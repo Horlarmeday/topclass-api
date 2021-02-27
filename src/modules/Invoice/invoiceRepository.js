@@ -13,6 +13,7 @@ const {
   Sale,
   Waybill,
   DispenseHistory,
+  Product,
 } = require('../../database/models');
 
 const { Op } = Sequelize;
@@ -38,7 +39,21 @@ export async function invoiceCount() {
  * @param vatPrice
  */
 export async function createInvoice(data, vatPrice = 0) {
-  const { name, cid, invoice_type, product, sid } = data;
+  const {
+    name,
+    cid,
+    invoice_type,
+    product,
+    sid,
+    country_of_origin,
+    condition_of_sale,
+    terms_of_payment,
+    delivery,
+    validity,
+    installation,
+    place_of_delivery,
+    bank_id,
+  } = data;
   return db.sequelize.transaction(async t => {
     const invoice = await Invoice.create(
       {
@@ -47,6 +62,14 @@ export async function createInvoice(data, vatPrice = 0) {
         invoice_type,
         sid,
         vat: vatPrice,
+        country_of_origin,
+        condition_of_sale,
+        terms_of_payment,
+        delivery,
+        validity,
+        installation,
+        place_of_delivery,
+        bank_id,
         invoice_numb:
           invoice_type === 'proforma invoice'
             ? `TPL/PRV/${generateId((await invoiceCount()) + 1, 4)}`
@@ -59,7 +82,7 @@ export async function createInvoice(data, vatPrice = 0) {
       item: detail.item,
       item_id: detail.item_id,
       price: detail.price,
-      quantity: detail.quantity,
+      quantity: detail.quantity || 1,
       label: detail.label,
       ivid: invoice.ivid,
     }));
@@ -96,7 +119,7 @@ export async function getOneInvoice(data) {
     include: [
       { model: Staff, attributes: { exclude: ['password'] } },
       { model: Customer },
-      { model: InvoiceItem },
+      { model: InvoiceItem, include: [{ model: Product, attributes: ['desc'] }] },
     ],
   });
 

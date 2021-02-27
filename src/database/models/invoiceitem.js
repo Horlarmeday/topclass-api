@@ -61,10 +61,14 @@ module.exports = (sequelize, DataTypes) => {
       tableName: 'invoice_items',
     }
   );
-  InvoiceItem.associate = ({ Invoice }) => {
+  InvoiceItem.associate = ({ Invoice, Product }) => {
     // associations can be defined here
     InvoiceItem.belongsTo(Invoice, {
       foreignKey: 'ivid',
+    });
+
+    InvoiceItem.belongsTo(Product, {
+      foreignKey: 'item_id',
     });
   };
   return InvoiceItem;

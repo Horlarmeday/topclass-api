@@ -40,6 +40,30 @@ module.exports = {
       invoice_type: {
         type: Sequelize.STRING,
       },
+      country_of_origin: {
+        type: Sequelize.STRING,
+      },
+      condition_of_sale: {
+        type: Sequelize.TEXT,
+      },
+      terms_of_payment: {
+        type: Sequelize.TEXT,
+      },
+      delivery: {
+        type: Sequelize.TEXT,
+      },
+      validity: {
+        type: Sequelize.TEXT,
+      },
+      installation: {
+        type: Sequelize.TEXT,
+      },
+      place_of_delivery: {
+        type: Sequelize.STRING,
+      },
+      bank_id: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
