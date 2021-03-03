@@ -1,4 +1,4 @@
-import { creditors, getOnePayment, getOneSale, staffCreditors } from './saleRepository';
+import { debtors, getOnePayment, getOneSale, staffDebtors } from './saleRepository';
 import SaleService from './SaleService';
 import { validatePayment } from './validations';
 
@@ -112,18 +112,18 @@ class SaleController {
   }
 
   /**
-   * get all creditors
+   * get all debtors
    *
    * @static
    * @param {object} req express request object
    * @param {object} res express response object
    * @param {object} next next middleware
-   * @returns {json} json object with creditors data
+   * @returns {json} json object with debtors data
    */
   static async getCreditors(req, res, next) {
     const { currentPage, pageLimit } = req.query;
     try {
-      const sales = await creditors(Number(currentPage), Number(pageLimit));
+      const sales = await debtors(Number(currentPage), Number(pageLimit));
 
       return res.status(200).json({
         message: 'Data retrieved',
@@ -135,18 +135,18 @@ class SaleController {
   }
 
   /**
-   * get staff creditors
+   * get staff debtors
    *
    * @static
    * @param {object} req express request object
    * @param {object} res express response object
    * @param {object} next next middleware
-   * @returns {json} json object with creditors data
+   * @returns {json} json object with debtors data
    */
   static async getStaffCreditors(req, res, next) {
     const { currentPage, pageLimit } = req.query;
     try {
-      const sales = await staffCreditors(Number(currentPage), Number(pageLimit), req.user.sub);
+      const sales = await staffDebtors(Number(currentPage), Number(pageLimit), req.user.sub);
 
       return res.status(200).json({
         message: 'Data retrieved',

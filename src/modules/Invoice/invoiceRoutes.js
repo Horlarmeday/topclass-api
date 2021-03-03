@@ -14,6 +14,7 @@ router.put('/stepdown', verify, InvoiceController.stepDownInvoice);
 router.put('/waybill', verify, InvoiceController.updateWaybill);
 router.put('/dispense', verify, InvoiceController.dispenseItem);
 router.get('/', verify, InvoiceController.getInvoices);
+router.get('/staff-invoices', verify, InvoiceController.getInvoicesCreatedByStaff);
 router.get('/waybill', verify, InvoiceController.getWaybills);
 router.get('/waybill/:id', verify, InvoiceController.getOneWaybill);
 router.get('/:id', verify, InvoiceController.getInvoiceParams);

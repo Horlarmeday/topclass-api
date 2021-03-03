@@ -158,55 +158,45 @@ export async function getStaffSales(currentPage = 1, pageLimit = 10, data) {
     include: [{ model: Customer }, { model: Invoice }],
     where: {
       sid: data,
-      [Op.or]: [
-        {
-          status: 'Partial',
-        },
-        {
-          status: 'Paid',
-        },
-      ],
+      status: {
+        [Op.not]: 'Pending',
+      },
     },
   });
 }
 
 /**
- * creditors
+ * debtors
  *
  * @function
- * @returns {json} json object with creditors data
+ * @returns {json} json object with debtors data
  * @param currentPage
  * @param pageLimit
  */
-export async function creditors(currentPage = 1, pageLimit = 10) {
+export async function debtors(currentPage = 1, pageLimit = 10) {
   return Sale.paginate({
     page: currentPage,
     paginate: pageLimit,
     order: [['createdAt', 'DESC']],
     include: [{ model: Customer }, { model: Invoice }],
     where: {
-      [Op.or]: [
-        {
-          status: 'Partial',
-        },
-        {
-          status: 'Pending',
-        },
-      ],
+      status: {
+        [Op.not]: 'Paid',
+      },
     },
   });
 }
 
 /**
- * get creditors a staff created
+ * get debtors a staff created
  *
  * @function
- * @returns {json} json object with creditors data
+ * @returns {json} json object with debtors data
  * @param currentPage
  * @param pageLimit
  * @param data
  */
-export async function staffCreditors(currentPage = 1, pageLimit = 10, data) {
+export async function staffDebtors(currentPage = 1, pageLimit = 10, data) {
   return Sale.paginate({
     page: currentPage,
     paginate: pageLimit,
@@ -214,14 +204,9 @@ export async function staffCreditors(currentPage = 1, pageLimit = 10, data) {
     include: [{ model: Customer }, { model: Invoice }],
     where: {
       sid: data,
-      [Op.or]: [
-        {
-          status: 'Partial',
-        },
-        {
-          status: 'Pending',
-        },
-      ],
+      status: {
+        [Op.not]: 'Paid',
+      },
     },
   });
 }

@@ -1,7 +1,12 @@
 /* eslint-disable camelcase */
 import { validateInvoice, validateWaybill } from './validations';
 import InvoiceService from './InvoiceService';
-import { getInvoiceItems, getOneInvoice, getOneWaybill } from './invoiceRepository';
+import {
+  getInvoiceItems,
+  getOneInvoice,
+  getOneWaybill,
+  getStaffInvoices,
+} from './invoiceRepository';
 
 /**
  *
@@ -197,6 +202,30 @@ class InvoiceController {
   static async getInvoices(req, res, next) {
     try {
       const invoices = await InvoiceService.getInvoices(req.query);
+
+      return res.status(200).json({
+        message: 'Data retrieved',
+        data: invoices,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * get all invoices created by a staff
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoices data
+   */
+  static async getInvoicesCreatedByStaff(req, res, next) {
+    const { currentPage, pageLimit } = req.query;
+
+    try {
+      const invoices = await getStaffInvoices(+currentPage, +pageLimit, req.user.sub);
 
       return res.status(200).json({
         message: 'Data retrieved',

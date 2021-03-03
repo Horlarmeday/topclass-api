@@ -8,9 +8,9 @@ router.post('/receipt', verify, SaleController.generateReceipt);
 router.put('/', verify, SaleController.updateSale);
 router.put('/discount', verify, SaleController.applyDiscount);
 router.get('/', verify, SaleController.getSales);
-router.get('/creditors', verify, SaleController.getCreditors);
+router.get('/debtors', verify, SaleController.getCreditors);
 router.get('/payments', verify, SaleController.getPayments);
-router.get('/staff-creditors', verify, SaleController.getStaffCreditors);
+router.get('/staff-debtors', verify, SaleController.getStaffCreditors);
 router.get('/:id', verify, SaleController.getOneSale);
 router.get('/payments/:id', verify, SaleController.getOnePayment);
 

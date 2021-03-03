@@ -14,6 +14,7 @@ const {
   Waybill,
   DispenseHistory,
   Product,
+  Bank,
 } = require('../../database/models');
 
 const { Op } = Sequelize;
@@ -120,6 +121,7 @@ export async function getOneInvoice(data) {
       { model: Staff, attributes: { exclude: ['password'] } },
       { model: Customer },
       { model: InvoiceItem, include: [{ model: Product, attributes: ['desc'] }] },
+      { model: Bank },
     ],
   });
 
@@ -273,6 +275,27 @@ export async function getInvoiceByDate(currentPage = 1, pageLimit = 10, start, e
         [Op.gte]: new Date(new Date(start).setHours(0, 0, 0)),
         [Op.lt]: new Date(new Date(end).setHours(23, 59, 59)),
       },
+    },
+  });
+}
+
+/**
+ * get all invoice created by a staff
+ *
+ * @function
+ * @returns {json} json object with invoices data
+ * @param currentPage
+ * @param pageLimit
+ * @param staff_id
+ */
+export async function getStaffInvoices(currentPage = 1, pageLimit = 10, staff_id) {
+  return Invoice.paginate({
+    page: currentPage,
+    paginate: pageLimit,
+    order: [['createdAt', 'DESC']],
+    include: [{ model: Customer, attributes: ['name'] }],
+    where: {
+      sid: staff_id,
     },
   });
 }
