@@ -35,15 +35,6 @@ export function validateInvoice(invoice) {
     bank_id: Joi.number()
       .allow('')
       .optional(),
-    // service: Joi.array().items(
-    //   Joi.object({
-    //     svid: Joi.number(),
-    //     name: Joi.string(),
-    //     quantity: Joi.number(),
-    //     price: Joi.number(),
-    //     total_price: Joi.number(),
-    //   })
-    // ),
   });
   return schema.validate(invoice);
 }
