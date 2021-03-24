@@ -54,6 +54,7 @@ export async function createInvoice(data, vatPrice = 0) {
     installation,
     place_of_delivery,
     bank_id,
+    date_of_transaction,
   } = data;
   return db.sequelize.transaction(async t => {
     const invoice = await Invoice.create(
@@ -70,6 +71,7 @@ export async function createInvoice(data, vatPrice = 0) {
         validity,
         installation,
         place_of_delivery,
+        date_of_transaction: date_of_transaction || Date.now(),
         bank_id,
         invoice_numb:
           invoice_type === 'proforma invoice'

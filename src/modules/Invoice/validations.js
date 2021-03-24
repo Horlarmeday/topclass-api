@@ -7,6 +7,7 @@ export function validateInvoice(invoice) {
     cid: Joi.number().required(),
     invoice_type: Joi.string().required(),
     should_include_vat: Joi.boolean().required(),
+    date_of_transaction: Joi.date().required(),
     product: Joi.array()
       .items()
       .required(),

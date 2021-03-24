@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       vat: DataTypes.FLOAT,
       comment: DataTypes.STRING,
       invoice_numb: DataTypes.STRING,
+      date_of_transaction: DataTypes.DATE,
       is_approved: {
         type: DataTypes.INTEGER,
         allowNull: false,

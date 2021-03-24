@@ -64,6 +64,9 @@ module.exports = {
       bank_id: {
         type: Sequelize.INTEGER,
       },
+      date_of_transaction: {
+        type: Sequelize.DATE,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
