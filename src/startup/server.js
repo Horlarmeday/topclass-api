@@ -28,7 +28,7 @@ const server = express();
 const apiTimeout = 18000;
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 7000,
 });
 
 const corsOptions = {

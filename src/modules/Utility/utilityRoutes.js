@@ -9,6 +9,7 @@ router.post('/settings/create', verify, UtilityController.createSetting);
 router.post('/default/create', verify, UtilityController.createDefaultItem);
 router.post('/bank/create', verify, UtilityController.createBank);
 router.put('/settings', verify, UtilityController.updateSetting);
+router.put('/bank', verify, UtilityController.updateBank);
 router.delete('/label', verify, UtilityController.deleteLabel);
 router.delete('/unit', verify, UtilityController.deleteUnit);
 router.delete('/default', verify, UtilityController.deleteDefaultItem);

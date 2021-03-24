@@ -1,5 +1,7 @@
+/* eslint-disable camelcase */
 import { validateBank, validateDefaultItem, validateLabel, validateSetting, validateUnit } from './validations';
 import UtilityService from './UtilityService';
+import ProductService from '../Product/ProductService';
 
 /**
  *
@@ -331,6 +333,33 @@ class UtilityController {
 
       return res.status(201).json({
         message: 'Successful, data created!',
+        data: bank,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * update bank
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with bank data
+   */
+  static async updateBank(req, res, next) {
+    const { bank_id } = req.body;
+    if (!bank_id) return res.status(400).json('Bank id required');
+
+    try {
+      const bank = await UtilityService.updateBankService(
+        Object.assign(req.body, { staff: req.user })
+      );
+
+      return res.status(200).json({
+        message: 'Data updated successfully',
         data: bank,
       });
     } catch (e) {

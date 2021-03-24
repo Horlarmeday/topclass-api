@@ -17,9 +17,10 @@ import {
   updateSetting,
   getSettings,
   createBank,
-  getBanks,
+  getBanks, updateBank,
 } from './utilityRepository';
 import { auditLog } from '../../command/schedule';
+import { updateProduct } from '../Product/productRepository';
 
 class UtilityService {
   /**
@@ -258,6 +259,23 @@ class UtilityService {
     // Audit Log
     const content = `${body.fullname} created a new bank (${bank.bank_name})`;
     await auditLog(content, body.sid);
+
+    return bank;
+  }
+
+  /**
+   * update bank
+   *
+   * @static
+   * @returns {json} json object with bank data
+   * @param body
+   * @memberOf ProductService
+   */
+  static async updateBankService(body) {
+    const bank = await updateBank(body);
+    // Audit Log
+    const content = `${body.staff.fullname} updated ${bank.bank_name}`;
+    await auditLog(content, body.staff.sub);
 
     return bank;
   }

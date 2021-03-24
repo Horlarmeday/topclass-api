@@ -16,6 +16,11 @@ export async function createLabel(data) {
   return Label.create(data);
 }
 
+
+export async function getBankById(data) {
+  return Bank.findByPk(data);
+}
+
 /**
  * query label by label id
  *
@@ -327,6 +332,19 @@ export async function createBank(data) {
     sort_code,
     tin_number,
   });
+}
+
+
+/**
+ * update bank
+ *
+ * @function
+ * @returns {json} json object with bank data
+ * @param data
+ */
+export async function updateBank(data) {
+  const bank = await getBankById(data.bank_id);
+  return bank.update(data);
 }
 
 /**
