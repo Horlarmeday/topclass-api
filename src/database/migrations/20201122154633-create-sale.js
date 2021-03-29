@@ -29,6 +29,9 @@ module.exports = {
       sid: {
         type: Sequelize.INTEGER,
       },
+      date_of_sale: {
+        type: Sequelize.DATE,
+      },
       discount: {
         type: Sequelize.INTEGER,
         defaultValue: 0,

@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       sid: DataTypes.INTEGER,
+      date_of_expense: DataTypes.DATE,
     },
     {}
   );

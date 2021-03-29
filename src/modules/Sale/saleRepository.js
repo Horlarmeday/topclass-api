@@ -251,7 +251,7 @@ export async function searchSales(currentPage = 1, pageLimit = 10, search) {
  * @param data
  */
 export async function createPayment(data) {
-  const { sid, slid, bank, payment_method, amount, label } = data;
+  const { sid, slid, bank, payment_method, amount, label, date_of_payment } = data;
   const sale = await getSaleById(slid);
   return Payment.create({
     sid,
@@ -261,6 +261,7 @@ export async function createPayment(data) {
     bank,
     payment_method,
     amount,
+    date_of_payment,
   });
 }
 

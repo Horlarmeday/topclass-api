@@ -31,6 +31,9 @@ module.exports = {
       driver_phone: {
         type: Sequelize.STRING,
       },
+      date_of_transaction: {
+        type: Sequelize.DATE,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

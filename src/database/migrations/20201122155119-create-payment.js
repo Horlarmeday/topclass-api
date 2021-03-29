@@ -26,6 +26,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       label: Sequelize.STRING,
+      date_of_payment: Sequelize.DATE,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

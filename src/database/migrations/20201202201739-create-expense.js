@@ -22,6 +22,9 @@ module.exports = {
       sid: {
         type: Sequelize.INTEGER,
       },
+      date_of_expense: {
+        type: Sequelize.DATE,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

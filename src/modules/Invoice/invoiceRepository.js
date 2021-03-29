@@ -547,7 +547,7 @@ export async function waybillCount() {
  * @param data
  */
 export async function createWaybill(data) {
-  const { driver_phone, cid, driver_name, vehicle_numb, sid, ivid, name } = data;
+  const { driver_phone, cid, driver_name, vehicle_numb, sid, ivid, name, date_of_transaction } = data;
   return Waybill.create({
     waybill_numb: `TPL/WYB/${generateId((await waybillCount()) + 1, 4)}`,
     driver_name,
@@ -557,6 +557,7 @@ export async function createWaybill(data) {
     vehicle_numb,
     ivid,
     name,
+    date_of_transaction,
   });
 }
 

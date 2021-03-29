@@ -107,12 +107,13 @@ export async function searchAssets(currentPage = 1, pageLimit = 10, search) {
  * @param data
  */
 export async function createExpense(data) {
-  const { name, unit, description, cost, sid } = data;
+  const { name, unit, description, cost, sid, date_of_expense } = data;
   return Expense.create({
     name,
     description,
     unit,
     cost,
+    date_of_expense,
     sid,
   });
 }

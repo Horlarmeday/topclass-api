@@ -47,6 +47,7 @@ export function validateWaybill(waybill) {
     cid: Joi.number().required(),
     vehicle_numb: Joi.string().required(),
     ivid: Joi.number().required(),
+    date_of_transaction: Joi.date().required(),
   });
   return schema.validate(waybill);
 }

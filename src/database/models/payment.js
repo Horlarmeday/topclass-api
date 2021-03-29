@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       bank: DataTypes.INTEGER,
       // label: DataTypes.STRING,
       payment_method: DataTypes.STRING,
+      date_of_payment: DataTypes.DATE,
     },
     {}
   );

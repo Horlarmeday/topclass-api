@@ -65,6 +65,10 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      date_of_transaction: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
     },
     {}
   );

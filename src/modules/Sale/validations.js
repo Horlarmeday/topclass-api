@@ -8,6 +8,7 @@ export function validatePayment(payment) {
     amount: Joi.number().required(),
     slid: Joi.number().required(),
     should_generate: Joi.boolean().required(),
+    date_of_payment: Joi.date().required(),
   });
   return schema.validate(payment);
 }
