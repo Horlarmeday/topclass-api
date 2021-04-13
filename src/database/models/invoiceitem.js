@@ -56,6 +56,11 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      item_type: {
+        type: DataTypes.ENUM('Product', 'Service'),
+        allowNull: false,
+        defaultValue: 'Product',
+      },
     },
     {
       tableName: 'invoice_items',

@@ -7,6 +7,7 @@ import {
   getOneWaybill,
   getStaffInvoices,
 } from './invoiceRepository';
+import UtilityService from '../Utility/UtilityService';
 
 /**
  *
@@ -119,17 +120,41 @@ class InvoiceController {
    * @returns {json} json object with invoice data
    */
   static async updateInvoice(req, res, next) {
-    const { ivid } = req.body;
-    if (!ivid) return res.status(400).json('Invoice id required');
-
     try {
       const invoice = await InvoiceService.updateInvoiceService(
-        Object.assign(req.body, { staff: req.user })
+        Object.assign(req.body, { staff: req.user, ivid: req.params.id })
       );
 
       return res.status(200).json({
         message: 'Data updated successfully',
         data: invoice,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  /**
+   * delete invoice item
+   *
+   * @static
+   * @param {object} req express request object
+   * @param {object} res express response object
+   * @param {object} next next middleware
+   * @returns {json} json object with invoice item data
+   */
+  static async deleteInvoiceItem(req, res, next) {
+    const { inv_id } = req.body;
+    if (!inv_id) return res.status(400).json('Invoice id required');
+
+    try {
+      const unit = await InvoiceService.deleteInvoiceItem(
+        Object.assign(req.body, { staff: req.user })
+      );
+
+      return res.status(200).json({
+        message: 'Data deleted successfully',
+        data: unit,
       });
     } catch (e) {
       return next(e);

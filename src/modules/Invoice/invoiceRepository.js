@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase,no-param-reassign */
 import { Sequelize } from 'sequelize';
 import SettingInterface from '../../helpers/constants';
 import { generateId } from '../../helpers/helper';
@@ -87,11 +87,33 @@ export async function createInvoice(data, vatPrice = 0) {
       price: detail.price,
       quantity: detail.quantity || 1,
       label: detail.label,
+      item_type: detail.item_type,
       ivid: invoice.ivid,
     }));
 
     await InvoiceItem.bulkCreate(items, { transaction: t });
     return invoice;
+  });
+}
+
+async function getInvoiceItemById(data) {
+  return InvoiceItem.findByPk(data);
+}
+
+// async function updateInvoiceItem(data) {
+//   const invoice = await getInvoiceItemById(data.inv_id);
+//   return invoice.update(data);
+// }
+
+async function createInvoiceItem(data) {
+  return InvoiceItem.create({
+    item: data.item,
+    item_id: data.item_id,
+    price: data.price,
+    quantity: data.quantity || 1,
+    label: data.label,
+    item_type: data.item_type,
+    ivid: data.ivid,
   });
 }
 
@@ -104,6 +126,65 @@ export async function createInvoice(data, vatPrice = 0) {
  */
 export async function getInvoiceById(data) {
   return Invoice.findByPk(data);
+}
+
+/**
+ * update invoice
+ *
+ * @function
+ * @returns {json} json object with invoice data
+ * @param data
+ * @param vatPrice
+ */
+export async function updateInvoice(data, vatPrice = 0) {
+  const {
+    name,
+    cid,
+    invoice_type,
+    product,
+    country_of_origin,
+    condition_of_sale,
+    terms_of_payment,
+    delivery,
+    validity,
+    installation,
+    place_of_delivery,
+    bank_id,
+    date_of_transaction,
+    ivid,
+  } = data;
+
+  const invoice = await getInvoiceById(ivid);
+  const updatedInvoice = await invoice.update({
+    name,
+    cid,
+    invoice_type,
+    country_of_origin,
+    condition_of_sale,
+    terms_of_payment,
+    delivery,
+    validity,
+    installation,
+    place_of_delivery,
+    bank_id,
+    date_of_transaction,
+    vat: vatPrice,
+  });
+
+  if (product.length) {
+    const items = product.map(detail => ({
+      item: detail.item,
+      item_id: detail.item_id,
+      price: detail.price,
+      quantity: detail.quantity || 1,
+      label: detail.label,
+      item_type: detail.item_type,
+      ivid,
+    }));
+    await InvoiceItem.bulkCreate(items);
+  }
+
+  return updatedInvoice;
 }
 
 /**
@@ -161,18 +242,6 @@ export async function getPendingItemsCount(data) {
 }
 
 /**
- * update invoice
- *
- * @function
- * @returns {json} json object with invoice data
- * @param data
- */
-export async function updateInvoice(data) {
-  const invoice = await getInvoiceById(data.ivid);
-  return invoice.update(data);
-}
-
-/**
  * change invoice to is_dispensed
  *
  * @function
@@ -182,6 +251,18 @@ export async function updateInvoice(data) {
 export async function invoiceDispensed(data) {
   const invoice = await getInvoiceById(data);
   return invoice.update({ is_dispensed: 1 });
+}
+
+/**
+ * delete invoice item
+ *
+ * @function
+ * @returns {json} json object with invoice item data
+ * @param data
+ */
+export async function deleteInvoiceItem(data) {
+  const item = await getInvoiceItemById(data);
+  return item.destroy({ force: true });
 }
 
 /**
@@ -547,7 +628,16 @@ export async function waybillCount() {
  * @param data
  */
 export async function createWaybill(data) {
-  const { driver_phone, cid, driver_name, vehicle_numb, sid, ivid, name, date_of_transaction } = data;
+  const {
+    driver_phone,
+    cid,
+    driver_name,
+    vehicle_numb,
+    sid,
+    ivid,
+    name,
+    date_of_transaction,
+  } = data;
   return Waybill.create({
     waybill_numb: `TPL/WYB/${generateId((await waybillCount()) + 1, 4)}`,
     driver_name,

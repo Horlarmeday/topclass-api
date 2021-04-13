@@ -29,6 +29,11 @@ module.exports = {
       ivid: {
         type: Sequelize.INTEGER,
       },
+      item_type: {
+        type: Sequelize.ENUM('Product', 'Service'),
+        allowNull: false,
+        defaultValue: 'Product',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

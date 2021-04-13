@@ -7,7 +7,7 @@ router.post('/create', verify, InvoiceController.createInvoice);
 router.post('/waybill/create', verify, InvoiceController.createWaybill);
 router.post('/items', verify, InvoiceController.getInvoiceItems);
 router.post('/getById', verify, InvoiceController.getOneInvoice);
-router.put('/', verify, InvoiceController.updateInvoice);
+router.put('/:id', verify, InvoiceController.updateInvoice);
 router.put('/approve', verify, InvoiceController.approveInvoice);
 router.put('/decline', verify, InvoiceController.declineInvoice);
 router.put('/stepdown', verify, InvoiceController.stepDownInvoice);
@@ -19,5 +19,6 @@ router.get('/waybill', verify, InvoiceController.getWaybills);
 router.get('/waybill/:id', verify, InvoiceController.getOneWaybill);
 router.get('/:id', verify, InvoiceController.getInvoiceParams);
 router.delete('/', verify, InvoiceController.deleteInvoice);
+router.delete('/invoice-item', verify, InvoiceController.deleteInvoiceItem);
 
 export default router;

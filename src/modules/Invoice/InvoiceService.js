@@ -1,26 +1,27 @@
 import {
-  createInvoice,
-  filterInvoices,
-  getInvoices,
-  searchInvoices,
-  updateInvoice,
-  deleteInvoice,
-  approveInvoice,
-  declineInvoice,
-  stepDownInvoice,
-  createWaybill,
-  getWaybills,
-  searchWaybill,
-  updateWaybill,
-  dispenseItem,
-  getItemById,
-  createDispenseHistory,
-  getPendingItemsCount,
-  invoiceDispensed,
-  unDispensedInvoices,
   approvedNotSteppedDownInvoices,
+  approveInvoice,
+  createDispenseHistory,
+  createInvoice,
+  createWaybill,
+  declineInvoice,
+  deleteInvoice,
+  deleteInvoiceItem,
+  dispenseItem,
+  filterInvoices,
   getInvoiceByDate,
   getInvoiceById,
+  getInvoices,
+  getItemById,
+  getPendingItemsCount,
+  getWaybills,
+  invoiceDispensed,
+  searchInvoices,
+  searchWaybill,
+  stepDownInvoice,
+  unDispensedInvoices,
+  updateInvoice,
+  updateWaybill,
 } from './invoiceRepository';
 import { getSettingByName } from '../Utility/utilityRepository';
 import Constant from '../../helpers/constants';
@@ -31,6 +32,12 @@ import { getProductById, updateProductQuantity } from '../Product/productReposit
 import { getStaffByOneRole } from '../Staff/staffRepository';
 
 class InvoiceService {
+  static async calculateTax(product) {
+    const vat = await getSettingByName(Constant.VAT);
+    const total = product.map(cost => +cost.price).reduce((a, b) => a + b, 0);
+    return (+vat.value / 100) * total;
+  }
+
   /**
    * create invoice
    *
@@ -45,9 +52,7 @@ class InvoiceService {
     const staff = getStaffByOneRole(Role.SUPERADMIN);
 
     if (body.should_include_vat) {
-      const vat = await getSettingByName(Constant.VAT);
-      const total = body.product.map(cost => Number(cost.price)).reduce((a, b) => a + b, 0);
-      const vatPrice = (Number(vat.value) / 100) * total;
+      const vatPrice = await this.calculateTax(body.product);
 
       const createdInvoice = await createInvoice(body, vatPrice);
 
@@ -81,12 +86,33 @@ class InvoiceService {
    * @memberOf InvoiceService
    */
   static async updateInvoiceService(body) {
-    const updatedInvoice = await updateInvoice(body);
+    let vatPrice = 0;
+    if (body.should_include_vat) {
+      vatPrice = await this.calculateTax(body.product);
+    }
+    const updatedInvoice = await updateInvoice(body, vatPrice);
     // Audit Log
     const content = `${body.staff.fullname} updated ${updatedInvoice.name} invoice`;
     await auditLog(content, body.staff.sub);
 
     return updatedInvoice;
+  }
+
+  /**
+   * delete invoice
+   *
+   * @static
+   * @returns {json} json object with invoice data
+   * @param body
+   * @memberOf InvoiceService
+   */
+  static async deleteInvoiceItem(body) {
+    const item = await deleteInvoiceItem(body.inv_id);
+    // Audit Log
+    const content = `${body.staff.fullname} deleted ${item.item} invoice item`;
+    await auditLog(content, body.staff.sub);
+
+    return item;
   }
 
   /**
