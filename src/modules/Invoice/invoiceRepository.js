@@ -40,6 +40,7 @@ export async function invoiceCount() {
  * @param vatPrice
  */
 export async function createInvoice(data, vatPrice = 0) {
+  console.log(data)
   const {
     name,
     cid,
