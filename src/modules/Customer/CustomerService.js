@@ -18,9 +18,6 @@ class CustomerService {
    * @memberOf CustomerService
    */
   static async createCustomerService(body) {
-    const customer = await findCustomerByPhone(body.phone);
-    if (customer) throw new Error('Customer account already exists');
-
     const newCustomer = await createCustomer(body);
     // Audit Log
     const content = `${body.fullname} created ${newCustomer.name} customer account`;
