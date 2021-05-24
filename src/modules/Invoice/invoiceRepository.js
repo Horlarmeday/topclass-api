@@ -40,7 +40,6 @@ export async function invoiceCount() {
  * @param vatPrice
  */
 export async function createInvoice(data, vatPrice = 0) {
-  console.log(data)
   const {
     name,
     cid,
@@ -76,7 +75,7 @@ export async function createInvoice(data, vatPrice = 0) {
         bank_id,
         invoice_numb:
           invoice_type === 'proforma invoice'
-            ? `TPL/PRV/${generateId((await invoiceCount()) + 1, 4)}`
+            ? `TPL/PI/${generateId((await invoiceCount()) + 1, 4)}`
             : `TPL/INV/${generateId((await invoiceCount()) + 1, 4)}`,
       },
       { transaction: t }
