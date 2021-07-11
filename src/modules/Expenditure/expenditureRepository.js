@@ -107,7 +107,7 @@ export async function searchAssets(currentPage = 1, pageLimit = 10, search) {
  * @param data
  */
 export async function createExpense(data) {
-  const { name, unit, description, cost, sid, date_of_expense } = data;
+  const { name, unit, description, cost, sid, date_of_expense, type } = data;
   return Expense.create({
     name,
     description,
@@ -115,6 +115,7 @@ export async function createExpense(data) {
     cost,
     date_of_expense,
     sid,
+    type,
   });
 }
 

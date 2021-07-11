@@ -10,4 +10,7 @@ export default {
   NEW_NOTIFICATION: 'New',
   DISPENSE: 'dispense',
   RETURN: 'return',
+  GENERATOR_PURCHASE: 'Generator Purchase',
+  MAINTENANCE: 'Maintenance',
+  OFFICE_EXPENSES: 'Office Expenses',
 };

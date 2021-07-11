@@ -1,4 +1,5 @@
 import sequelizePaginate from 'sequelize-paginate';
+import Constant from '../../helpers/constants'
 
 module.exports = (sequelize, DataTypes) => {
   const Expense = sequelize.define(
@@ -32,6 +33,17 @@ module.exports = (sequelize, DataTypes) => {
       },
       cost: {
         type: DataTypes.DECIMAL,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      type: {
+        type: DataTypes.ENUM(
+          Constant.GENERATOR_PURCHASE,
+          Constant.OFFICE_EXPENSES,
+          Constant.MAINTENANCE
+        ),
         allowNull: false,
         validate: {
           notEmpty: true,

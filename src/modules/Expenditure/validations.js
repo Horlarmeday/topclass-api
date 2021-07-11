@@ -19,6 +19,7 @@ export function validateExpense(expense) {
     cost: Joi.number().required(),
     name: Joi.string().required(),
     unit: Joi.string().required(),
+    type: Joi.string().required(),
     date_of_expense: Joi.date().required(),
   });
   return schema.validate(expense);
