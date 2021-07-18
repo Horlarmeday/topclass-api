@@ -11,9 +11,11 @@ import {
   filterInvoices,
   getInvoiceByDate,
   getInvoiceById,
+  getInvoiceItems,
   getInvoices,
   getItemById,
   getPendingItemsCount,
+  getSparePartInvoiceItems,
   getWaybills,
   invoiceDispensed,
   searchInvoices,
@@ -349,6 +351,15 @@ class InvoiceService {
     await auditLog(content, body.staff.sub);
 
     return waybill;
+  }
+
+  static async getInvoiceItems(body) {
+    const { ivid, label } = body;
+    if (label === 'all') {
+      return getInvoiceItems(ivid);
+    }
+
+    return getSparePartInvoiceItems(ivid);
   }
 }
 export default InvoiceService;

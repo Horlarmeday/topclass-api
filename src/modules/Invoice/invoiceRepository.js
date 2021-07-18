@@ -229,6 +229,19 @@ export async function getInvoiceItems(data) {
 }
 
 /**
+ * query invoice account in the DB by invoice id
+ *
+ * @function
+ * @returns {json} json object with invoice items data
+ * @param data
+ */
+export async function getSparePartInvoiceItems(data) {
+  return InvoiceItem.findAll({
+    where: { ivid: data, label: 'spare part' },
+  });
+}
+
+/**
  * query invoice items in the DB by invoice id
  *
  * @function

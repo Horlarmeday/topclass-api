@@ -99,7 +99,7 @@ class InvoiceController {
    */
   static async getInvoiceItems(req, res, next) {
     try {
-      const items = await getInvoiceItems(req.body.ivid);
+      const items = await InvoiceService.getInvoiceItems(req.body);
 
       return res.status(200).json({
         message: 'Success',

@@ -33,7 +33,7 @@ export function validateInvoice(invoice) {
       .allow('')
       .optional(),
     bank_id: Joi.number()
-      .allow('')
+      .allow(null)
       .optional(),
   });
   return schema.validate(invoice);
